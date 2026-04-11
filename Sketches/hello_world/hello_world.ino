@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#include "EPD.h"
+
 
 void setup() {
   Serial.begin(115200);
