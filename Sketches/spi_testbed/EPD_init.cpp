@@ -35,7 +35,7 @@ void EPD_Update(void) {
 // Note: works in local brush mode
 void EPD_PartialUpdate(void) {
     DISP_SPI_WRITE_COMMAND(0x22); // Command: Display Update Control 2
-    DISP_SPI_WRITE_DATA(0xDC); // operating sequence parameter (Don't know what this does)
+    DISP_SPI_WRITE_DATA(0xDC); // operating sequence parameter (Don't know what this does) 11011100
     DISP_SPI_WRITE_COMMAND(0x20); // Command: Master Activation
     EPD_BUSY_HOLD();
 }
@@ -77,8 +77,8 @@ void EPD_FastMode1Init(void) {
     EPD_BUSY_HOLD();
 
     DISP_SPI_WRITE_COMMAND(0x1A); // Command: Temperature Sensor Control (Write to temp register)
-    DISP_SPI_WRITE_DATA(0x64); // Don't know what this does
-    DISP_SPI_WRITE_DATA(0x00); // Don't know what this does
+    DISP_SPI_WRITE_DATA(0x64); // Don't know what this does 01100100
+    DISP_SPI_WRITE_DATA(0x00); // Don't know what this does 00000000
 
     DISP_SPI_WRITE_COMMAND(0x22); // Command: Display Update Control 2
     DISP_SPI_WRITE_DATA(0x91); // operating sequence parameter (should probably be 99)
@@ -86,71 +86,71 @@ void EPD_FastMode1Init(void) {
     EPD_BUSY_HOLD();
 
     DISP_SPI_WRITE_COMMAND(0x3C); // Command: Border Waveform Control
-    DISP_SPI_WRITE_DATA(0x3); // Don't know what this does
+    DISP_SPI_WRITE_DATA(0x3); // Don't know what this does 00000011
     EPD_BUSY_HOLD();
 }
 
 //
 void EPD_SetRAMMP(void) {
     DISP_SPI_WRITE_COMMAND(0x11); // Command: Data Entry Mode Setting
-    DISP_SPI_WRITE_DATA(0x05); // Don't know what this does
+    DISP_SPI_WRITE_DATA(0x05); // Don't know what this does 00000101
     DISP_SPI_WRITE_COMMAND(0x44); // Command: Set RAM X Address Start/End Position
-    DISP_SPI_WRITE_DATA(0x00); // Don't know what this does
-    DISP_SPI_WRITE_DATA(0x31); // Don't know what this does
+    DISP_SPI_WRITE_DATA(0x00); // Don't know what this does 00000000
+    DISP_SPI_WRITE_DATA(0x31); // Don't know what this does 00110001
     DISP_SPI_WRITE_COMMAND(0x45); // Command: Set RAM Y Address Start/End Position
-    DISP_SPI_WRITE_DATA(0x0F); // Don't know what this does
-    DISP_SPI_WRITE_DATA(0x01); // Don't know what this does
-    DISP_SPI_WRITE_DATA(0x00); // Don't know what this does
-    DISP_SPI_WRITE_DATA(0x00); // Don't know what this does
+    DISP_SPI_WRITE_DATA(0x0F); // Don't know what this does 00001111
+    DISP_SPI_WRITE_DATA(0x01); // Don't know what this does 00000001
+    DISP_SPI_WRITE_DATA(0x00); // Don't know what this does 00000000
+    DISP_SPI_WRITE_DATA(0x00); // Don't know what this does 00000000
 }
 
 //
 void EPD_SetRAMMA(void) {
     DISP_SPI_WRITE_COMMAND(0x4E); // Command: Set RAM X Address Counter
-    DISP_SPI_WRITE_DATA(0x00); // Don't know what this does
+    DISP_SPI_WRITE_DATA(0x00); // Don't know what this does 00000000
     DISP_SPI_WRITE_COMMAND(0x4F); // Command: Set RAM Y Address Counter
-    DISP_SPI_WRITE_DATA(0x0F); // Don't know what this does
-    DISP_SPI_WRITE_DATA(0x01); // Don't know what this does
+    DISP_SPI_WRITE_DATA(0x0F); // Don't know what this does 00001111
+    DISP_SPI_WRITE_DATA(0x01); // Don't know what this does 00000001
 }
 
 //
 void EPD_SetRAMSP(void) {
-    DISP_SPI_WRITE_COMMAND(0x91); // Command: Unknown
-    DISP_SPI_WRITE_DATA(0x04); // Don't know what this does
-    DISP_SPI_WRITE_COMMAND(0xC4); // Command: Unknown
-    DISP_SPI_WRITE_DATA(0x31); // Don't know what this does
-    DISP_SPI_WRITE_DATA(0x00); // Don't know what this does
-    DISP_SPI_WRITE_COMMAND(0xC5); // Command: Unknown
-    DISP_SPI_WRITE_DATA(0x0F); // Don't know what this does
-    DISP_SPI_WRITE_DATA(0x01); // Don't know what this does
-    DISP_SPI_WRITE_DATA(0x00); // Don't know what this does
-    DISP_SPI_WRITE_DATA(0x00); // Don't know what this does
+    DISP_SPI_WRITE_COMMAND(0x91); // Command: Unknown 10010001
+    DISP_SPI_WRITE_DATA(0x04); // Don't know what this does 00000100
+    DISP_SPI_WRITE_COMMAND(0xC4); // Command: Unknown 11000100
+    DISP_SPI_WRITE_DATA(0x31); // Don't know what this does 00110001
+    DISP_SPI_WRITE_DATA(0x00); // Don't know what this does 00000000
+    DISP_SPI_WRITE_COMMAND(0xC5); // Command: Unknown 11000101
+    DISP_SPI_WRITE_DATA(0x0F); // Don't know what this does 00001111
+    DISP_SPI_WRITE_DATA(0x01); // Don't know what this does 00000001
+    DISP_SPI_WRITE_DATA(0x00); // Don't know what this does 00000000
+    DISP_SPI_WRITE_DATA(0x00); // Don't know what this does 00000000
 }
 
 //
 void EPD_SetRAMSA(void) {
-    DISP_SPI_WRITE_COMMAND(0xCE); // Command: Unknown
-    DISP_SPI_WRITE_DATA(0x31); // Don't know what this does
-    DISP_SPI_WRITE_COMMAND(0xCF); // Command: Unknown
-    DISP_SPI_WRITE_DATA(0x0F); // Don't know what this does
-    DISP_SPI_WRITE_DATA(0x01); // Don't know what this does
+    DISP_SPI_WRITE_COMMAND(0xCE); // Command: Unknown 11001110
+    DISP_SPI_WRITE_DATA(0x31); // Don't know what this does 11000001
+    DISP_SPI_WRITE_COMMAND(0xCF); // Command: Unknown 11001111
+    DISP_SPI_WRITE_DATA(0x0F); // Don't know what this does 00001111
+    DISP_SPI_WRITE_DATA(0x01); // Don't know what this does 00000001
 }
 
 //
 void EPD_Clear_R26A6H(void) {
     uint16_t i, j;
     EPD_SetRAMMA();
-    DISP_SPI_WRITE_COMMAND(0x26); // Command: 
+    DISP_SPI_WRITE_COMMAND(0x26); // Command: Write RAM (RED) / RAM 0x26
     for (i = 0; i < GATE_BITS; i++) {
         for (j = 0; j < SOURCE_BYTES; j++) {
-            DISP_SPI_WRITE_DATA(0xFF); //
+            DISP_SPI_WRITE_DATA(0xFF); // Don't know what this does 11111111
         }
     }
     EPD_SetRAMSA();
-    DISP_SPI_WRITE_COMMAND(0xA6); // Command: 
+    DISP_SPI_WRITE_COMMAND(0xA6); // Command: Unknown 10100110
     for (i = 0; i < GATE_BITS; i++) {
         for (j = 0; j < SOURCE_BYTES; j++) {
-            DISP_SPI_WRITE_DATA(0xFF); // 
+            DISP_SPI_WRITE_DATA(0xFF); // Don't know what this does 11111111
         }
     }
 }
@@ -160,32 +160,32 @@ void EPD_Display_Clear(void) {
     uint16_t i, j;
     EPD_SetRAMMP(); //
     EPD_SetRAMMA(); //
-    DISP_SPI_WRITE_COMMAND(0x24); // Command: 
+    DISP_SPI_WRITE_COMMAND(0x24); // Command: Write RAM (Black White) / RAM 0x24
     for (i = 0; i < GATE_BITS, i++) {
         for (j = 0; j < SOURCE_BYTES; j++) {
-            DISP_SPI_WRITE_DATA(0xFF); // 
+            DISP_SPI_WRITE_DATA(0xFF); // Don't know what this does 11111111
         }
     }
     EPD_SetRAMMA(); //
-    DISP_SPI_WRITE_COMMAND(0x26); // Command: 
+    DISP_SPI_WRITE_COMMAND(0x26); // Command: Write RAM (RED) / RAM 0x26
     for (i = 0; i < GATE_BITS, i++) {
         for (j = 0; j < SOURCE_BYTES; j++) {
-            DISP_SPI_WRITE_DATA(0x00); //
+            DISP_SPI_WRITE_DATA(0x00); // Don't know what this does 00000000
         }
     }
     EPD_SetRAMSP(); //
     EPD_SetRAMSA(); //
-    DISP_SPI_WRITE_COMMAND(0xA4); // Command: 
+    DISP_SPI_WRITE_COMMAND(0xA4); // Command: Unknown 10100100
     for (i = 0; i < GATE_BITS, i++) {
         for (j = 0; j < SOURCE_BYTES; j++) {
-            DISP_SPI_WRITE_DATA(0xFF); // 
+            DISP_SPI_WRITE_DATA(0xFF); // Don't know what this does 11111111
         }
     }
     EPD_SetRAMSA(); //
-    DISP_SPI_WRITE_COMMAND(0xA6); // Command: 
+    DISP_SPI_WRITE_COMMAND(0xA6); // Command: Unknown 10100110
     for (i = 0; i < GATE_BITS, i++) {
         for (j = 0; j < SOURCE_BYTES; j++) {
-            DISP_SPI_WRITE_DATA(0x00); // 
+            DISP_SPI_WRITE_DATA(0x00); // Don't know what this does 00000000
         }
     }
 }
@@ -198,7 +198,7 @@ void EPD_Display(const uint8_t *ImageBW) {
     uint32_t tempLine = 0;
     EDP_SetRAMMP(); // 
     EPD_SetRAMMA(); // 
-    DISP_SPI_WRITE_COMMAND(0x24); // Command: 
+    DISP_SPI_WRITE_COMMAND(0x24); // Command: Write RAM (Black White) / RAM 0x24
     for (i = 0; i < ALLSCREEN_BYTES; i++) {
         tempOriginal = *(ImageBW + tempLine * SOURCE_BYTES * 2 + tempCol);
         tempLine++;
@@ -210,7 +210,7 @@ void EPD_Display(const uint8_t *ImageBW) {
     }
     EDP_SetRAMSP(); // 
     EPD_SetRAMSA(); // 
-    DISP_SPI_WRITE_COMMAND(0xA4); // Command: 
+    DISP_SPI_WRITE_COMMAND(0xA4); // Command: Unknown 10100100
     for (i = 0; i < ALLSCREEN_BYTES; i++) {
         tempOriginal = *(ImageBW + tempLine * SOURCE_BYTES * 2 + tempCol);
         tempLine++;
@@ -230,24 +230,8 @@ void EPD_WhiteScreen_ALL_Fast(const unsigned char *data) {
     unsigned int tempCol = 0;
     unsigned int tempLine = 0;
 
-    DISP_SPI_WRITE_COMMAND(0x11); // Command: 
-    DISP_SPI_WRITE_DATA(0x05); // 
-
-    DISP_SPI_WRITE_COMMAND(0x44); // Command: 
-    DISP_SPI_WRITE_DATA(0x00); // 
-    DISP_SPI_WRITE_DATA(0x31); // 
-
-    DISP_SPI_WRITE_COMMAND(0x45); // Command: 
-    DISP_SPI_WRITE_DATA(0x0F); // 
-    DISP_SPI_WRITE_DATA(0x01); // 
-    DISP_SPI_WRITE_DATA(0x00); // 
-    DISP_SPI_WRITE_DATA(0x00); // 
-
-    DISP_SPI_WRITE_COMMAND(0x4E); // Command: 
-    DISP_SPI_WRITE_DATA(0x00); // 
-    DISP_SPI_WRITE_COMMAND(0x4F); // Command: 
-    DISP_SPI_WRITE_DATA(0x0F); // 
-    DISP_SPI_WRITE_DATA(0x01); // 
+    EPD_SetRAMMP();
+    EPD_SetRAMMA();
 
     EPD_BUSY_HOLD();
     DISP_SPI_WRITE_COMMAND(0x24); // Command: 
@@ -265,24 +249,8 @@ void EPD_WhiteScreen_ALL_Fast(const unsigned char *data) {
         DISP_SPI_WRITE_DATA(0x00); // 
     }
 
-    DISP_SPI_WRITE_COMMAND(0x91); // Command: 
-    DISP_SPI_WRITE_DATA(0x04); // 
-
-    DISP_SPI_WRITE_COMMAND(0xC4); // Command: 
-    DISP_SPI_WRITE_DATA(0x31); // 
-    DISP_SPI_WRITE_DATA(0x00); // 
-
-    DISP_SPI_WRITE_COMMAND(0xC5); // Command: 
-    DISP_SPI_WRITE_DATA(0x0F); // 
-    DISP_SPI_WRITE_DATA(0x01); // 
-    DISP_SPI_WRITE_DATA(0x00); // 
-    DISP_SPI_WRITE_DATA(0x00); // 
-
-    DISP_SPI_WRITE_COMMAND(0xCE); // Command: 
-    DISP_SPI_WRITE_DATA(0x31); // 
-    DISP_SPI_WRITE_COMMAND(0xCF); // Command: 
-    DISP_SPI_WRITE_DATA(0x0F); // 
-    DISP_SPI_WRITE_DATA(0x01); // 
+    EPD_SetRAMSP();
+    EPD_SetRAMSA();
 
     EPD_BUSY_HOLD();
     
