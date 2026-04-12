@@ -35,7 +35,18 @@ void EPD_Update(void) {
 // Note: works in local brush mode
 void EPD_PartialUpdate(void) {
     DISP_SPI_WRITE_COMMAND(0x22); // Command: Display Update Control 2
-    DISP_SPI_WRITE_DATA(0xDC); // operating sequence parameter (Don't know what this does) 11011100
+    /*
+    The datasheet annoyingly does not specify what 0xDC does, but ChatGPT suggests that it does
+    the following based on the PDF, which I provided to it:
+        1) Turn on clock signal
+        2) Analog Block
+        3) Load waveform LUT
+        4) Display update
+    It seems to be a streamlined version of running 0xF7 after 0x22 that
+    reuses the existing LUT instead of loading a new one. It also disables full waveform
+    sequencing
+    */
+    DISP_SPI_WRITE_DATA(0xDC); // operating sequence parameter
     DISP_SPI_WRITE_COMMAND(0x20); // Command: Master Activation
     EPD_BUSY_HOLD();
 }
