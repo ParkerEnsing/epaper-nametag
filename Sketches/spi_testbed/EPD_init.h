@@ -23,13 +23,13 @@ void EPD_FastUpdate(void);
 void EPD_DeepSleep(void);
 void EPD_Init(void);
 void EPD_FastMode1Init(void);
-void EPD_SetRAMMP(void);
-void EPD_SetRAMMA(void);
-void EPD_SetRAMSP(void);
-void EPD_SetRAMSA(void);
-void EPD_Clear_R26A6H(void);
+void EPD_SET_RAM_WINDOW_PRI(void);
+void EPD_SET_RAM_CURSOR_PRI(void);
+void EPD_SET_RAM_WINDOW_SEC(void);
+void EPD_SET_RAM_CURSOR_SEC(void);
+void EPD_RED_RAM_FILL_WHITE(void);
 void EPD_Display_Clear(void);
 void EPD_Display(const uint8_t *ImageBW);
-void EPD_WhiteScreen_ALL_Fast(const unsigned char *data);
+void EPD_FAST_INVERT(const unsigned char *data);
 
 #endif
