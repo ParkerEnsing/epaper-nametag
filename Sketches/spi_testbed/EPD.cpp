@@ -46,7 +46,7 @@ Return: None
 Note: the use of '396' and '8' in the switch below is used for offsetting pixels correctly between the two regions of
 the display separated by the distinct SSD1683s
 */
-void Paint_SetPixel(uint16_t xPoint, uint16_t pYoint, uint16_t color) {
+void Paint_SetPixel(uint16_t xPoint, uint16_t yPoint, uint16_t color) {
     uint16_t x, y;
     uint32_t addr;
     uint8_t rData;
@@ -82,6 +82,9 @@ void Paint_SetPixel(uint16_t xPoint, uint16_t pYoint, uint16_t color) {
             break;
         default:
             return;
+    }
+    if (x >= Paint.widthMemory || y >= Paint.heightMemory) {
+        return;
     }
     addr = x / 8 + y * Paint.widthByte;
     rData = Paint.Image[addr];

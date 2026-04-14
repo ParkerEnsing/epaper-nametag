@@ -22,6 +22,7 @@ How to display:
 
 #define SCREEN_PWR 7
 #define MAX_CHAR_NUM_PER_LINE 66
+#define CYCLE_PERIOD 3000 // milliseconds
 
 uint8_t ImageBW[27200];
 char *text = "Hello world";
@@ -38,35 +39,87 @@ void setup() {
 
   EPD_FastMode1Init();
   // Display default image
-  EPD_ShowPicture(0, 0, 792, 272, gImage_global_1, WHITE);
-  EPD_Display(ImageBW);
-  EPD_FastUpdate();
-  EPD_DeepSleep();
-  delay(5000);
-  clear_all();
+  // EPD_ShowPicture(0, 0, 792, 272, gImage_global_1, WHITE);
+  // EPD_Display(ImageBW);
+  // EPD_FastUpdate();
+  // EPD_DeepSleep();
+  // delay(CYCLE_PERIOD);
+  // clear_all();
 
-  // Display inverted image
-  EPD_ShowPicture(0, 0, 792, 272, gImage_global_1, BLACK);
-  EPD_Display(ImageBW);
-  EPD_FastUpdate();
-  EPD_DeepSleep();
-  delay(5000);
-  clear_all();
+  // // Display inverted image
+  // EPD_ShowPicture(0, 0, 792, 272, gImage_global_1, BLACK);
+  // EPD_Display(ImageBW);
+  // EPD_FastUpdate();
+  // EPD_DeepSleep();
+  // delay(CYCLE_PERIOD);
+  // clear_all();
 
-  // Display text
-  Paint_Clear(WHITE);
-  displayLongText(0, 0, text, 24, BLACK);
-  EPD_Display(ImageBW);
-  EPD_FastUpdate();
-  EPD_DeepSleep();
-  delay(5000);
-  clear_all();
+  // // Display text
+  // Paint_Clear(WHITE);
+  // displayLongText(0, 0, text, 24, BLACK);
+  // EPD_Display(ImageBW);
+  // EPD_FastUpdate();
+  // EPD_DeepSleep();
+  // delay(CYCLE_PERIOD);
+  // clear_all();
 
-  EPD_DrawLine(0, 0, 792, 272, BLACK);
+  // // Draw a line
+  // Paint_Clear(WHITE);
+  // EPD_DrawLine(0, 0, 792, 272, BLACK);
+  // EPD_Display(ImageBW);
+  // EPD_FastUpdate();
+  // EPD_DeepSleep();
+  // delay(CYCLE_PERIOD);
+  // clear_all();
+
+  // // Draw a hollow rectangle
+  // Paint_Clear(WHITE);
+  // EPD_DrawRectangle(20, 20, 772, 252, BLACK, 0);
+  // EPD_Display(ImageBW);
+  // EPD_FastUpdate();
+  // EPD_DeepSleep();
+  // delay(CYCLE_PERIOD);
+  // clear_all();
+
+  // // Draw a filled rectangle
+  // Paint_Clear(WHITE);
+  // EPD_DrawRectangle(20, 20, 772, 252, BLACK, 1);
+  // EPD_Display(ImageBW);
+  // EPD_FastUpdate();
+  // EPD_DeepSleep();
+  // delay(CYCLE_PERIOD);
+  // clear_all();
+
+  // // Draw a hollow circle
+  // Paint_Clear(WHITE);
+  // EPD_DrawCircle(792 / 2, 272 / 2, 100, BLACK, 0);
+  // EPD_Display(ImageBW);
+  // EPD_FastUpdate();
+  // EPD_DeepSleep();
+  // delay(CYCLE_PERIOD);
+  // clear_all();
+
+  // // Draw a hollow circle
+  // Paint_Clear(WHITE);
+  // EPD_DrawCircle(792 / 2, 272 / 2, 100, BLACK, 1);
+  // EPD_Display(ImageBW);
+  // EPD_FastUpdate();
+  // EPD_DeepSleep();
+  // delay(CYCLE_PERIOD);
+  // clear_all();
+
+  // Draw an image from primatives
+  Paint_Clear(BLACK);
+  EPD_DrawCircle(792 / 2, 272 / 2, 120, WHITE, 1);
+  EPD_DrawLine(792 / 2 - 115, 272 / 2, 792 / 2 + 115, 272 / 2, BLACK);
+  EPD_DrawLine(792 / 2, 272 / 2 - 115, 792 / 2, 272 / 2 + 115, BLACK);
+  EPD_DrawCircle(792 / 2, 272 / 2, 10, WHITE, 1);
+  EPD_DrawLine(792 / 2 - 5, 272 / 2, 792 / 2 + 5, 272 / 2, BLACK);
+  EPD_DrawLine(792 / 2, 272 / 2 - 5, 792 / 2, 272 / 2 + 5, BLACK);
   EPD_Display(ImageBW);
   EPD_FastUpdate();
   EPD_DeepSleep();
-  delay(5000);
+  delay(CYCLE_PERIOD);
   clear_all();
 }
 

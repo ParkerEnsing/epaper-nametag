@@ -106,6 +106,9 @@ void Paint_SetPixel(uint16_t Xpoint,uint16_t Ypoint,uint16_t Color)
 				default:
 						return;
     }
+		if (X >= Paint.widthMemory || Y >= Paint.heightMemory) {
+        return;
+    }
 		Addr=X/8+Y*Paint.widthByte;
     Rdata=Paint.Image[Addr];
     if(Color==BLACK)
