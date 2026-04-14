@@ -1,6 +1,7 @@
 // #include <Arduino.h>
 #include "EPD.h"
 #include "EPD_init.h"
+#include "EPDfont.h"
 #include "string.h"
 
 PAINT Paint;
@@ -9,19 +10,19 @@ PAINT Paint;
 Function description: Create an array of image caches
 API description:
     *image: image array to be passed
-    Width: The width of the image
-    Height: picture length
-    Rotate: screen shows the direction
-    Color: displays the color
+    width: The width of the image
+    height: picture length
+    rotate: screen shows the direction
+    color: displays the color
 Return value: None
 */
 void Paint_NewImage(uint8_t *image, uint16_t width, uint16_t height, uint16_t rotate, uint16_t color) {
-    Paint.Image = BLACK; // feels redundent
+    Paint.Image = BLACK;
     Paint.Image = image;
     Paint.color = color;
     Paint.widthMemory = width;
     Paint.heightMemory = height;
-    Paint.widthByte = (width % 8 == 0)? (width / 8): (width / 8 + 1);
+    Paint.widthByte = (width % 8 == 0) ? (width / 8) : (width / 8 + 1); // If width can be divided evenly into bytes, do so. Otherwise, reserve an extra byte for the remainder
     Paint.heightByte = height;
     Paint.rotate = rotate;
     if (rotate == 0 || rotate == 180) {
@@ -41,11 +42,15 @@ Interface description:
     Ypoint: pixel Y-coordinate parameter
     Color: pixel color parameter
 Return: None
+
+Note: the use of '396' and '8' in the switch below is used for offsetting pixels correctly between the two regions of
+the display separated by the distinct SSD1683s
 */
 void Paint_SetPixel(uint16_t xPoint, uint16_t pYoint, uint16_t color) {
     uint16_t x, y;
     uint32_t addr;
     uint8_t rData;
+    // Transform the coordinate system based on display rotation
     switch (Paint.rotate) {
         case 0:
             if (xPoint > 396) {
@@ -80,26 +85,33 @@ void Paint_SetPixel(uint16_t xPoint, uint16_t pYoint, uint16_t color) {
     }
     addr = x / 8 + y * Paint.widthByte;
     rData = Paint.Image[addr];
-    if (Color == BLACK) {
-        Paint.Image[addr] = rData & ~ (0x80 >> (x % 8)); // The data position will be 0
+    if (color == BLACK) {
+        /*
+        (x % 8): determines which bit inside the byte represents the target pixel
+        0x80 >> (x % 8): Creates a bit mask where 1 represents the pixel to be changed
+        ~(0x80 >> (x % 8)): Inverts the mask. Bitwise AND between the mask and the byte will ensure
+            the desired pixel is set to 0 (black) without changing the other pixels in the byte
+        */
+        Paint.Image[addr] = rData & ~(0x80 >> (x % 8));
     }
     else {
-        Paint.Image[addr] = rData | (0x80 >> (x % 8)); // The data position will be 1
+        Paint.Image[addr] = rData | (0x80 >> (x % 8)); // Similar to black but sets pixel bit to 1
     }
 }
 
 /*
-Function description: Empty the buffer
-Interface description: Color pixel color parameter
+Function description: Iterate over pixels and set them to color
+Interface description:
+    color: pixel color parameter
 Return value: None
 */
-void Paint_Clear(uint8_t Color) {
+void Paint_Clear(uint8_t color) {
     uint16_t x, y;
     uint32_t addr;
     for (y = 0; y < Paint.heightByte; y++) {
         for (x = 0; x < Paint.widthByte; x++) {
             addr = x + y * Paint.widthByte; // 8 pixel = 1 byte
-            Paint.Image[addr] = Color;
+            Paint.Image[addr] = color;
         }
     }
 }
@@ -113,6 +125,7 @@ Interface Description:
     yEnd: Pixel Y end coordinate parameter
     color: Pixel color parameter
 Return: None
+Note: This implements Bresenham's Line Algorithm, hence some weird variable names
 */
 void EPD_DrawLine(uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t yEnd, uint16_t color) {
     uint16_t xPoint, yPoint;
@@ -435,7 +448,7 @@ void EPD_ShowWatch(uint16_t x, uint16_t y, float num, uint8_t len, uint8_t pre, 
     sizeX = sizeY / 2;
     num1 = num * EPD_Pow(10, pre);
     for (t = 0; t < len; t++) {
-        temp = (num1 / EPD_Pow(10, len - t -1)) % 10;
+        temp = (num1 / EPD_Pow(10, len - t - 1)) % 10;
         if (t == (len - pre)) {
             EPD_ShowChar(x + (len - pre) * sizeX + (sizeX / 2 - 2), y - 6, ':', sizeY, color);
             t++;

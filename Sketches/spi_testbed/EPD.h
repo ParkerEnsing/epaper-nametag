@@ -20,7 +20,7 @@ extern PAINT Paint;
 
 void Paint_NewImage(uint8_t *image, uint16_t width, uint16_t height, uint16_t rotate, uint16_t color); // Create a canvas to control the display orientation
 void Paint_SetPixel(uint16_t xPoint, uint16_t yPoint, uint16_t color);
-void Paint_Clear(uint8_t Color);
+void Paint_Clear(uint8_t color);
 void EPD_DrawLine(uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t yEnd, uint16_t color);
 void EPD_DrawRectangle(uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t yEnd, uint16_t color, uint8_t mode); // Draw a rectangle
 void EPD_DrawCircle(uint16_t xCenter, uint16_t yCenter, uint16_t radius, uint16_t color, uint8_t mode); // Draw a circle
