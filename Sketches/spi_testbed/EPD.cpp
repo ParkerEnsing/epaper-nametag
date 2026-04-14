@@ -132,7 +132,6 @@ void EPD_DrawLine(uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t yEnd
     int dx, dy;
     int xAddway, yAddway;
     int esp;
-    char dotted_len;
     xPoint = xStart;
     yPoint = yStart;
     dx = (int)xEnd - (int)xStart >= 0 ? xEnd - xStart : xStart - xEnd;
@@ -140,9 +139,7 @@ void EPD_DrawLine(uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t yEnd
     xAddway = xStart < xEnd ? 1 : -1;
     yAddway = yStart < yEnd ? 1 : -1;
     esp = dx + dy;
-    dotted_len = 0;
     for (;;) {
-        dotted_len++;
         Paint_SetPixel(xPoint, yPoint, color);
         if (2 * esp >= dy) {
             if (xPoint == xEnd) {
