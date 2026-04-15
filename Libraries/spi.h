@@ -2,42 +2,28 @@
 #define _SPI_H_
 
 #include <Arduino.h>
+#include "io.h"
 
-//项目板子
-#define SCK 12
-#define MOSI 11
-#define RES 47
-#define DC 46
-#define CS 45
-#define BUSY 48
+#define clearDispCOPI() digitalWrite(DISP_SPI_COPI, LOW)
+#define setDispCOPI() digitalWrite(DISP_SPI_COPI, HIGH)
 
-//#define SCK 12
-//#define MOSI 11
-//#define RES 21
-//#define DC 9
-//#define CS 10
-//#define BUSY 48
+#define clearDispSCK() digitalWrite(DISP_SPI_SCK, LOW)
+#define setDispSCK() digitalWrite(DISP_SPI_SCK, HIGH)
 
-#define EPD_SCK_Clr() digitalWrite(SCK, LOW)
-#define EPD_SCK_Set() digitalWrite(SCK, HIGH)
+#define clearDispCS() digitalWrite(DISP_SPI_CS, LOW)
+#define setDispCS() digitalWrite(DISP_SPI_CS, HIGH)
 
-#define EPD_MOSI_Clr() digitalWrite(MOSI, LOW)
-#define EPD_MOSI_Set() digitalWrite(MOSI, HIGH)
+#define clearDispDC() digitalWrite(DISP_SPI_DC, LOW)
+#define setDispDC() digitalWrite(DISP_SPI_DC, HIGH)
 
-#define EPD_RES_Clr() digitalWrite(RES, LOW)
-#define EPD_RES_Set() digitalWrite(RES, HIGH)
+#define clearDispRES() digitalWrite(DISP_SPI_RES, LOW)
+#define setDispRES() digitalWrite(DISP_SPI_RES, HIGH)
 
-#define EPD_DC_Clr() digitalWrite(DC, LOW)
-#define EPD_DC_Set() digitalWrite(DC, HIGH)
+#define readDispBusy digitalRead(DISP_SPI_BUSY)
 
-#define EPD_CS_Clr() digitalWrite(CS, LOW)
-#define EPD_CS_Set() digitalWrite(CS, HIGH)
-
-#define EPD_ReadBUSY digitalRead(BUSY)
-
-void EPD_GPIOInit(void);
-void EPD_WR_Bus(uint8_t dat);
-void EPD_WR_REG(uint8_t reg);
-void EPD_WR_DATA8(uint8_t dat);
+void INITIALIZE_SPI_GPIO(void);
+void DISP_SPI_WRITE_BYTE(uint8_t data);
+void DISP_SPI_WRITE_COMMAND(uint8_t registerCommand);
+void DISP_SPI_WRITE_DATA(uint8_t data);
 
 #endif

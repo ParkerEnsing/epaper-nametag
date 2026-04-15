@@ -1,436 +1,459 @@
+// #include <Arduino.h>
 #include "EPD.h"
+#include "EPD_init.h"
 #include "EPDfont.h"
 #include "string.h"
 
 PAINT Paint;
 
-
-/*******************************************************************
-    函数说明：创建图片缓存数组
-    接口说明：*image  要传入的图片数组
-               Width  图片宽度
-               Heighe 图片长度
-               Rotate 屏幕显示方向
-               Color  显示颜色
-    返回值：  无
-*******************************************************************/
-void Paint_NewImage(uint8_t *image,uint16_t Width,uint16_t Height,uint16_t Rotate,uint16_t Color)
-{
-	Paint.Image = 0x00;
-	Paint.Image = image;
-	Paint.color = Color;  
-	Paint.widthMemory = Width;
-	Paint.heightMemory = Height;  
-	Paint.widthByte = (Width % 8 == 0)? (Width / 8 ): (Width / 8 + 1);
-	Paint.heightByte = Height;     
-	Paint.rotate = Rotate;
-	if(Rotate==0||Rotate==180) 
-	{
-		Paint.width=Height;
-		Paint.height=Width;
-	} 
-	else 
-	{
-		Paint.width = Width;
-		Paint.height = Height;
-	}
-}				 
-
-/*******************************************************************
-    函数说明：清空缓冲区 
-    接口说明：Color  像素点颜色参数
-    返回值：  无
-*******************************************************************/
-void Paint_Clear(uint8_t Color)
-{
-	uint16_t X,Y;
-	uint32_t Addr;
-  for(Y=0;Y<Paint.heightByte;Y++) 
-	{
-    for(X=0;X<Paint.widthByte;X++) 
-		{   
-      Addr=X+Y*Paint.widthByte;//8 pixel =  1 byte
-      Paint.Image[Addr]=Color;
+/*
+Function description: Create an array of image caches
+API description:
+    *image: image array to be passed
+    width: The width of the image
+    height: picture length
+    rotate: screen shows the direction
+    color: displays the color
+Return value: None
+*/
+void Paint_NewImage(uint8_t *image, uint16_t width, uint16_t height, uint16_t rotate, uint16_t color) {
+    Paint.Image = BLACK;
+    Paint.Image = image;
+    Paint.color = color;
+    Paint.widthMemory = width;
+    Paint.heightMemory = height;
+    Paint.widthByte = (width % 8 == 0) ? (width / 8) : (width / 8 + 1); // If width can be divided evenly into bytes, do so. Otherwise, reserve an extra byte for the remainder
+    Paint.heightByte = height;
+    Paint.rotate = rotate;
+    if (rotate == 0 || rotate == 180) {
+        Paint.width = height;
+        Paint.height = width;
     }
-  }
+    else {
+        Paint.width = width;
+        Paint.height = height;
+    }
 }
 
+/*
+Function description: Light up a pixel
+Interface description:
+    Xpoint: pixel x coordinate parameter
+    Ypoint: pixel Y-coordinate parameter
+    Color: pixel color parameter
+Return: None
 
-/*******************************************************************
-    函数说明：点亮一个像素点
-    接口说明：Xpoint 像素点x坐标参数
-              Ypoint 像素点Y坐标参数
-              Color  像素点颜色参数
-    返回值：  无
-*******************************************************************/
-void Paint_SetPixel(uint16_t Xpoint,uint16_t Ypoint,uint16_t Color)
-{
-	uint16_t X, Y;
-	uint32_t Addr;
-	uint8_t Rdata;		
-    switch(Paint.rotate) 
-		{
-				case 0:
-					if(Xpoint>=396)
-					{
-						Xpoint+=8;
-					}
-					X=Xpoint;
-					Y=Ypoint;
-					break;
-			case 90:
-					if(Ypoint>=396)
-					{
-						Ypoint+=8;
-					}
-					X=Paint.widthMemory-Ypoint-1;
-					Y=Xpoint;
-					break;
-			case 180:
-				  if(Xpoint>=396)
-					{
-						Xpoint+=8;
-					}
-					X=Paint.widthMemory-Xpoint-1;
-					Y=Paint.heightMemory-Ypoint-1;
-					break;
-
-			case 270:
-					if(Ypoint>=396)
-					{
-						Ypoint+=8;
-					}
-					X=Ypoint;
-					Y=Paint.heightMemory-Xpoint-1;
-					break;
-				default:
-						return;
+Note: the use of '396' and '8' in the switch below is used for offsetting pixels correctly between the two regions of
+the display separated by the distinct SSD1683s
+*/
+void Paint_SetPixel(uint16_t xPoint, uint16_t yPoint, uint16_t color) {
+    uint16_t x, y;
+    uint32_t addr;
+    uint8_t rData;
+    // Transform the coordinate system based on display rotation
+    switch (Paint.rotate) {
+        case 0:
+            if (xPoint > 396) {
+                xPoint += 8;
+            }
+            x = xPoint;
+            y = yPoint;
+            break;
+        case 90:
+            if (yPoint >= 396) {
+                yPoint += 8;
+            }
+            x = Paint.widthMemory - yPoint - 1;
+            y = xPoint;
+            break;
+        case 180:
+            if (xPoint >= 396) {
+                xPoint += 8;
+            }
+            x = Paint.widthMemory - xPoint - 1;
+            y = Paint.heightMemory - yPoint - 1;
+            break;
+        case 270:
+            if (yPoint >= 396) {
+                yPoint += 8;
+            }
+            x = yPoint;
+            y = Paint.heightMemory - xPoint - 1;
+            break;
+        default:
+            return;
     }
-		Addr=X/8+Y*Paint.widthByte;
-    Rdata=Paint.Image[Addr];
-    if(Color==BLACK)
-    {    
-			Paint.Image[Addr]=Rdata&~(0x80>>(X % 8)); //将对应数据位置0
-		}
-    else
-		{
-      Paint.Image[Addr]=Rdata|(0x80>>(X % 8));   //将对应数据位置1  
-		}
+    if (x >= Paint.widthMemory || y >= Paint.heightMemory) {
+        return;
+    }
+    addr = x / 8 + y * Paint.widthByte;
+    rData = Paint.Image[addr];
+    if (color == BLACK) {
+        /*
+        (x % 8): determines which bit inside the byte represents the target pixel
+        0x80 >> (x % 8): Creates a bit mask where 1 represents the pixel to be changed
+        ~(0x80 >> (x % 8)): Inverts the mask. Bitwise AND between the mask and the byte will ensure
+            the desired pixel is set to 0 (black) without changing the other pixels in the byte
+        */
+        Paint.Image[addr] = rData & ~(0x80 >> (x % 8));
+    }
+    else {
+        Paint.Image[addr] = rData | (0x80 >> (x % 8)); // Similar to black but sets pixel bit to 1
+    }
 }
 
+/*
+Function description: Iterate over pixels and set them to color
+Interface description:
+    color: pixel color parameter
+Return value: None
+*/
+void Paint_Clear(uint8_t color) {
+    uint16_t x, y;
+    uint32_t addr;
+    for (y = 0; y < Paint.heightByte; y++) {
+        for (x = 0; x < Paint.widthByte; x++) {
+            addr = x + y * Paint.widthByte; // 8 pixel = 1 byte
+            Paint.Image[addr] = color;
+        }
+    }
+}
 
-/*******************************************************************
-    函数说明：划线函数
-    接口说明：Xstart 像素x起始坐标参数
-              Ystart 像素Y起始坐标参数
-              Xend   像素x结束坐标参数
-              Yend   像素Y结束坐标参数
-              Color  像素点颜色参数
-    返回值：  无
-*******************************************************************/
-void EPD_DrawLine(uint16_t Xstart,uint16_t Ystart,uint16_t Xend,uint16_t Yend,uint16_t Color)
-{   
-	uint16_t Xpoint, Ypoint;
-	int dx, dy;
-	int XAddway,YAddway;
-	int Esp;
-	char Dotted_Len;
-  Xpoint = Xstart;
-  Ypoint = Ystart;
-  dx = (int)Xend - (int)Xstart >= 0 ? Xend - Xstart : Xstart - Xend;
-  dy = (int)Yend - (int)Ystart <= 0 ? Yend - Ystart : Ystart - Yend;
-  XAddway = Xstart < Xend ? 1 : -1;
-  YAddway = Ystart < Yend ? 1 : -1;
-  Esp = dx + dy;
-  Dotted_Len = 0;
-  for (;;) {
-        Dotted_Len++;
-            Paint_SetPixel(Xpoint, Ypoint, Color);
-        if (2 * Esp >= dy) {
-            if (Xpoint == Xend)
+/*
+Function Description: Draws a line between two points
+Interface Description:
+    xStart: Pixel x start coordinate parameter
+    yStart: Pixel Y start coordinate parameter
+    xEnd: Pixel x end coordinate parameter
+    yEnd: Pixel Y end coordinate parameter
+    color: Pixel color parameter
+Return: None
+Note: This implements Bresenham's Line Algorithm, hence some weird variable names
+*/
+void EPD_DrawLine(uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t yEnd, uint16_t color) {
+    uint16_t xPoint, yPoint;
+    int dx, dy;
+    int xAddway, yAddway;
+    int esp;
+    xPoint = xStart;
+    yPoint = yStart;
+    dx = (int)xEnd - (int)xStart >= 0 ? xEnd - xStart : xStart - xEnd;
+    dy = (int)yEnd - (int)yStart <= 0 ? yEnd - yStart : yStart - yEnd;
+    xAddway = xStart < xEnd ? 1 : -1;
+    yAddway = yStart < yEnd ? 1 : -1;
+    esp = dx + dy;
+    for (;;) {
+        Paint_SetPixel(xPoint, yPoint, color);
+        if (2 * esp >= dy) {
+            if (xPoint == xEnd) {
                 break;
-            Esp += dy;
-            Xpoint += XAddway;
+            }
+            esp += dy;
+            xPoint += xAddway;
         }
-        if (2 * Esp <= dx) {
-            if (Ypoint == Yend)
+        if (2 * esp <= dx) {
+            if (yPoint == yEnd) {
                 break;
-            Esp += dx;
-            Ypoint += YAddway;
+            }
+            esp += dx;
+            yPoint += yAddway;
         }
     }
 }
-/*******************************************************************
-    函数说明：画矩形函数
-    接口说明：Xstart 矩形x起始坐标参数
-              Ystart 矩形Y起始坐标参数
-              Xend   矩形x结束坐标参数
-              Yend   矩形Y结束坐标参数
-              Color  像素点颜色参数
-              mode   矩形是否进行填充
-    返回值：  无
-*******************************************************************/
-void EPD_DrawRectangle(uint16_t Xstart,uint16_t Ystart,uint16_t Xend,uint16_t Yend,uint16_t Color,uint8_t mode)
-{
-	uint16_t i;
-    if (mode)
-			{
-        for(i = Ystart; i < Yend; i++) 
-				{
-          EPD_DrawLine(Xstart,i,Xend,i,Color);
-        }
-      }
-		else 
-		 {
-        EPD_DrawLine(Xstart, Ystart, Xend, Ystart, Color);
-        EPD_DrawLine(Xstart, Ystart, Xstart, Yend, Color);
-        EPD_DrawLine(Xend, Yend, Xend, Ystart, Color);
-        EPD_DrawLine(Xend, Yend, Xstart, Yend, Color);
-		 }
-}
-/*******************************************************************
-    函数说明：画圆函数
-    接口说明：X_Center 圆心x起始坐标参数
-              Y_Center 圆心Y坐标参数
-              Radius   圆形半径参数
-              Color  像素点颜色参数
-              mode   圆形是否填充显示
-    返回值：  无
-*******************************************************************/
-void EPD_DrawCircle(uint16_t X_Center,uint16_t Y_Center,uint16_t Radius,uint16_t Color,uint8_t mode)
-{
-	int Esp, sCountY;
-	uint16_t XCurrent, YCurrent;
-  XCurrent = 0;
-  YCurrent = Radius;
-  Esp = 3 - (Radius << 1 );
+
+/*
+Function Description: Draws a rectangle between two points
+Interface Description:
+    xStart: Pixel x start coordinate parameter
+    yStart: Pixel Y start coordinate parameter
+    xEnd: Pixel x end coordinate parameter
+    yEnd: Pixel Y end coordinate parameter
+    color: Pixel color parameter
+    mode: Whether the rectangle is filled
+Return: None
+*/
+void EPD_DrawRectangle(uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t yEnd, uint16_t color, uint8_t mode) {
+    uint16_t i;
     if (mode) {
-        while (XCurrent <= YCurrent ) { //Realistic circles
-            for (sCountY = XCurrent; sCountY <= YCurrent; sCountY ++ ) {
-                Paint_SetPixel(X_Center + XCurrent, Y_Center + sCountY, Color);//1
-                Paint_SetPixel(X_Center - XCurrent, Y_Center + sCountY, Color);//2
-                Paint_SetPixel(X_Center - sCountY, Y_Center + XCurrent, Color);//3
-                Paint_SetPixel(X_Center - sCountY, Y_Center - XCurrent, Color);//4
-                Paint_SetPixel(X_Center - XCurrent, Y_Center - sCountY, Color);//5
-                Paint_SetPixel(X_Center + XCurrent, Y_Center - sCountY, Color);//6
-                Paint_SetPixel(X_Center + sCountY, Y_Center - XCurrent, Color);//7
-                Paint_SetPixel(X_Center + sCountY, Y_Center + XCurrent, Color);
-            }
-            if ((int)Esp < 0 )
-                Esp += 4 * XCurrent + 6;
-            else {
-                Esp += 10 + 4 * (XCurrent - YCurrent );
-                YCurrent --;
-            }
-            XCurrent ++;
+        for (i = yStart; i < yEnd; i++) {
+            EPD_DrawLine(xStart, i, xEnd, i, color);
         }
-    } else { //Draw a hollow circle
-        while (XCurrent <= YCurrent ) {
-            Paint_SetPixel(X_Center + XCurrent, Y_Center + YCurrent, Color);//1
-            Paint_SetPixel(X_Center - XCurrent, Y_Center + YCurrent, Color);//2
-            Paint_SetPixel(X_Center - YCurrent, Y_Center + XCurrent, Color);//3
-            Paint_SetPixel(X_Center - YCurrent, Y_Center - XCurrent, Color);//4
-            Paint_SetPixel(X_Center - XCurrent, Y_Center - YCurrent, Color);//5
-            Paint_SetPixel(X_Center + XCurrent, Y_Center - YCurrent, Color);//6
-            Paint_SetPixel(X_Center + YCurrent, Y_Center - XCurrent, Color);//7
-            Paint_SetPixel(X_Center + YCurrent, Y_Center + XCurrent, Color);//0
-            if ((int)Esp < 0 )
-                Esp += 4 * XCurrent + 6;
-            else {
-                Esp += 10 + 4 * (XCurrent - YCurrent );
-                YCurrent --;
+    }
+    else {
+        EPD_DrawLine(xStart, yStart, xEnd, yStart, color);
+        EPD_DrawLine(xStart, yStart, xStart, yEnd, color);
+        EPD_DrawLine(xEnd, yEnd, xEnd, yStart, color);
+        EPD_DrawLine(xEnd, yEnd, xStart, yEnd, color);
+    }
+}
+
+/*
+Function Description: Draws a circle around a center point
+Interface Description:
+    xCenter: Pixel x center coordinate parameter
+    yCenter: Pixel Y center coordinate parameter
+    radius: Pixel radius of circle
+    color: Pixel color parameter
+    mode: Whether the circle is filled
+Return: None
+*/
+void EPD_DrawCircle(uint16_t xCenter, uint16_t yCenter, uint16_t radius, uint16_t color, uint8_t mode) {
+    int esp, sCountY;
+    uint16_t xCurrent, yCurrent;
+    xCurrent = 0;
+    yCurrent = radius;
+    esp = 3 - (radius << 1);
+    if (mode) {
+        while (xCurrent <= yCurrent) {
+            for (sCountY = xCurrent; sCountY <= yCurrent; sCountY++) {
+                Paint_SetPixel(xCenter + xCurrent, yCenter + sCountY, color);
+                Paint_SetPixel(xCenter - xCurrent, yCenter + sCountY, color);
+                Paint_SetPixel(xCenter - sCountY, yCenter + xCurrent, color);
+                Paint_SetPixel(xCenter - sCountY, yCenter - xCurrent, color);
+                Paint_SetPixel(xCenter - xCurrent, yCenter - sCountY, color);
+                Paint_SetPixel(xCenter + xCurrent, yCenter - sCountY, color);
+                Paint_SetPixel(xCenter + sCountY, yCenter - xCurrent, color);
+                Paint_SetPixel(xCenter + sCountY, yCenter + xCurrent, color);
             }
-            XCurrent ++;
+            if ((int)esp < 0) {
+                esp += 4 * xCurrent + 6;
+            }
+            else {
+                esp += 10 + 4 * (xCurrent - yCurrent);
+                yCurrent--;
+            }
+            xCurrent++;
+        }
+    }
+    else {
+        while (xCurrent <= yCurrent) {
+            Paint_SetPixel(xCenter + xCurrent, yCenter + yCurrent, color);
+            Paint_SetPixel(xCenter - xCurrent, yCenter + yCurrent, color);
+            Paint_SetPixel(xCenter - yCurrent, yCenter + xCurrent, color);
+            Paint_SetPixel(xCenter - yCurrent, yCenter - xCurrent, color);
+            Paint_SetPixel(xCenter - xCurrent, yCenter - yCurrent, color);
+            Paint_SetPixel(xCenter + xCurrent, yCenter - yCurrent, color);
+            Paint_SetPixel(xCenter + yCurrent, yCenter - xCurrent, color);
+            Paint_SetPixel(xCenter + yCurrent, yCenter + xCurrent, color);
+            if ((int)esp < 0) {
+                esp += 4 * xCurrent + 6;
+            }
+            else {
+                esp += 10 + 4 * (xCurrent - yCurrent);
+                yCurrent--;
+            }
+            xCurrent++;
         }
     }
 }
 
-/*******************************************************************
-    函数说明：显示单个字符
-    接口说明：x     字符x坐标参数
-              y      字符Y坐标参数
-              chr    要显示的字符
-              size1  显示字符字号大小
-              Color  像素点颜色参数
-    返回值：  无
-*******************************************************************/
-void EPD_ShowChar(uint16_t x,uint16_t y,uint16_t chr,uint16_t size1,uint16_t color)
-{
-	uint16_t i,m,temp,size2,chr1;
-	uint16_t x0,y0;
-	x0=x,y0=y;
-	if(size1==8)size2=6;
-	else size2=(size1/8+((size1%8)?1:0))*(size1/2);  //得到字体一个字符对应点阵集所占的字节数
-	chr1=chr-' ';  //计算偏移后的值
-	for(i=0;i<size2;i++)
-	{
-		if(size1==12)
-        {temp=ascii_1206[chr1][i];} //调用1206字体
-		else if(size1==16)
-        {temp=ascii_1608[chr1][i];} //调用1608字体
-		else if(size1==24)
-        {temp=ascii_2412[chr1][i];} //调用2412字体
-		else if(size1==48)
-        {temp=ascii_4824[chr1][i];} //调用2412字体
-		else return;
-		for(m=0;m<8;m++)
-		{
-			if(temp&0x01)Paint_SetPixel(x,y,color);
-			else Paint_SetPixel(x,y,!color);
-			temp>>=1;
-			y++;
-		}
-		x++;
-		if((size1!=8)&&((x-x0)==size1/2))
-		{x=x0;y0=y0+8;}
-		y=y0;
-  }
+/*
+Function Description: Displays individual characters
+Interface Description:
+    x: Character x coordinate parameters
+    y: Character Y coordinate parameter
+    chr: Characters to display
+    size1: Displays the font size of the characters
+    color: Pixel color parameter
+Return: None
+*/
+void EPD_ShowChar(uint16_t x, uint16_t y, uint16_t chr, uint16_t size1, uint16_t color) {
+    uint16_t i, m, temp, size2, chr1;
+    uint16_t x0, y0;
+    x0 = x;
+    y0 = y;
+    if (size1 == 8) {
+        size2 = 6;
+    }
+    else {
+        size2 = (size1 / 8 + ((size1 % 8) ? 1 : 0)) * (size1 / 2); // The number of bytes occupied by the dot set corresponding to one character of the font is obtained
+    }
+    chr1 = chr - ' '; // Calculate the offset value
+    for (i = 0; i < size2; i++) {
+        switch (size1) {
+            case 12:
+                temp = ascii_1206[chr1][i]; // Call the 1206 font
+                break;
+            case 16:
+                temp = ascii_1608[chr1][i]; // Call the 1608 font
+                break;
+            case 24:
+                temp = ascii_2412[chr1][i]; // Call the 2412 font
+                break;
+            case 48:
+                temp = ascii_4824[chr1][i]; // Call the 4824 font
+                break;
+            default:
+                return;
+        }
+        for (m = 0; m < 8; m++) {
+            if (temp & 0x01) {
+                Paint_SetPixel(x, y, color);
+            }
+            else {
+                Paint_SetPixel(x, y, !color);
+            }
+            temp >> 1;
+            y++;
+        }
+        x++;
+        if ((size1 != 8) && ((x - x0) == size1 / 2)) {
+            x = x0;
+            y0 = y0 + 8;
+        }
+        y = y0;
+    }
 }
 
-/*******************************************************************
-    函数说明：显示字符串
-    接口说明：x     字符串x坐标参数
-              y      字符串Y坐标参数
-              *chr    要显示的字符串
-              size1  显示字符串字号大小
-              Color  像素点颜色参数
-    返回值：  无
-*******************************************************************/
-void EPD_ShowString(uint16_t x,uint16_t y,const char *chr,uint16_t size1,uint16_t color)
-{
-	while(*chr!='\0')//判断是不是非法字符!
-	{
-		EPD_ShowChar(x,y,*chr,size1,color);
-		chr++;
-		x+=size1/2;
-  }
-}
-/*******************************************************************
-    函数说明：指数运算
-    接口说明：m 底数
-              n 指数
-    返回值：  m的n次方
-*******************************************************************/
-uint32_t EPD_Pow(uint16_t m,uint16_t n)
-{
-	uint32_t result=1;
-	while(n--)
-	{
-	  result*=m;
-	}
-	return result;
-}
-/*******************************************************************
-    函数说明：显示整型数字
-    接口说明：x     数字x坐标参数
-              y      数字Y坐标参数
-              num    要显示的数字
-              len    数字的位数
-              size1  显示字符串字号大小
-              Color  像素点颜色参数
-    返回值：  无
-*******************************************************************/
-void EPD_ShowNum(uint16_t x,uint16_t y,uint32_t num,uint16_t len,uint16_t size1,uint16_t color)
-{
-	uint8_t t,temp,m=0;
-	if(size1==8)m=2;
-	for(t=0;t<len;t++)
-	{
-		temp=(num/EPD_Pow(10,len-t-1))%10;
-			if(temp==0)
-			{
-				EPD_ShowChar(x+(size1/2+m)*t,y,'0',size1,color);
-      }
-			else 
-			{
-			  EPD_ShowChar(x+(size1/2+m)*t,y,temp+'0',size1,color);
-			}
-  }
-}
-/*******************************************************************
-    函数说明：显示浮点型数字
-    接口说明：x     数字x坐标参数
-              y      数字Y坐标参数
-              num    要显示的浮点数
-              len    数字的位数
-              pre    浮点数的精度
-              size1  显示字符串字号大小
-              Color  像素点颜色参数
-    返回值：  无
-*******************************************************************/
-
-void EPD_ShowFloatNum1(uint16_t x,uint16_t y,float num,uint8_t len,uint8_t pre,uint8_t sizey,uint8_t color)
-{         	
-	uint8_t t,temp,sizex;
-	uint16_t num1;
-	sizex=sizey/2;
-	num1=num*EPD_Pow(10,pre);
-	for(t=0;t<len;t++)
-	{
-		temp=(num1/EPD_Pow(10,len-t-1))%10;
-		if(t==(len-pre))
-		{
-			EPD_ShowChar(x+(len-pre)*sizex,y,'.',sizey,color);
-			t++;
-			len+=1;
-		}
-	 	EPD_ShowChar(x+t*sizex,y,temp+48,sizey,color);
-	}
+/*
+Function Description: Display string
+Interface Description:
+    x: string x coordinate parameter
+    y: string y coordinate
+    *chr: string to display
+    size1: Displays the font size of the characters
+    color: Pixel color parameter
+Return: None
+*/
+void EPD_ShowString(uint16_t x, uint16_t y, const char *chr, uint16_t size1, uint16_t color) {
+    while(*chr != '\0') { // Judge whether it is an illegal character!
+        EPD_ShowChar(x, y, *chr, size1, color);
+        chr++;
+        x += size1 / 2;
+    }
 }
 
-
-
-
-
-//GUI显示秒表
-void EPD_ShowWatch(uint16_t x,uint16_t y,float num,uint8_t len,uint8_t pre,uint8_t sizey,uint8_t color)
-{         	
-	uint8_t t,temp,sizex;
-	uint16_t num1;
-	sizex=sizey/2;
-	num1=num*EPD_Pow(10,pre);
-	for(t=0;t<len;t++)
-	{
-		temp=(num1/EPD_Pow(10,len-t-1))%10;
-		if(t==(len-pre))
-		{
-			EPD_ShowChar(x+(len-pre)*sizex+(sizex/2-2),y-6,':',sizey,color);
-			t++;
-			len+=1;
-		}
-	 	EPD_ShowChar(x+t*sizex,y,temp+48,sizey,color);
-	}
+/*
+Function Description: Returns m^n
+Interface Description:
+    m: base
+    n: exponent
+Return: uint32_t result
+*/
+uint32_t EPD_Pow(uint16_t m, uint16_t n) {
+    uint32_t result = 1;
+    while (n--) {
+        result *= m;
+    }
+    return result;
 }
 
+/*
+Function Description:
+Interface Description:
+    x: Character x coordinate
+    y: Character y coordinate
+    num: Number to be displayed
+    len: The number of digits of a number
+    size1: Font size
+    color: Pixel color parameter
+Return: None
+*/
+void EPD_ShowNum(uint16_t x, uint16_t y, uint32_t num, uint16_t len, uint16_t size1, uint16_t color) {
+    uint8_t t, temp, m = 0;
+    if (size1 == 8) {
+        m = 2;
+    }
+    for (t = 0; t < len; t++) {
+        temp = (num / EPD_Pow(10, len - t - 1)) % 10;
+        if (temp == 0) {
+            EPD_ShowChar(x + (size1 / 2 + m) * t, y, '0', size1, color);
+        }
+        else {
+            EPD_ShowChar(x + (size1 / 2 + m) * t, y, temp + '0', size1, color);
+        }
+    }
+}
 
+/*
+Function Description: Displays floating-point numbers
+Interface Description:
+    x: Character x coordinate parameters
+    y: Character Y coordinate parameter
+    num: The number of floats to be displayed
+    len: The number of digits of a number
+    pre: Floating-point precision
+    sizeY: Displays the string size size
+    color: Pixel color parameter
+Return: None
+*/
+void EPD_ShowFloatNum1(uint16_t x, uint16_t y, float num, uint8_t len, uint8_t pre, uint8_t sizeY, uint8_t color) {
+    uint8_t t, temp, sizeX;
+    uint16_t num1;
+    sizeX = sizeY / 2;
+    num1 = num * EPD_Pow(10, pre);
+    for (t = 0; t < len; t++) {
+        temp = (num1 / EPD_Pow(10, len - t - 1)) % 10;
+        if (t == (len - pre)) {
+            EPD_ShowChar(x + (len - pre) * sizeX, y, '.', sizeY, color);
+            t++;
+            len += 1;
+        }
+        EPD_ShowChar(x + t * sizeX, y, temp + 48, sizeY, color);
+    }
+}
 
-void EPD_ShowPicture(uint16_t x,uint16_t y,uint16_t sizex,uint16_t sizey,const uint8_t BMP[],uint16_t Color)
-{
-	uint16_t j=0,t;
-	uint16_t i,temp,x0,TypefaceNum=sizey*(sizex/8+((sizex%8)?1:0));
-	x0=x;
-  for(i=0;i<TypefaceNum;i++)
-	{
-		temp=BMP[j];
-		for(t=0;t<8;t++)
-		{
-		 if(temp&0x80)
-		 {
-			 Paint_SetPixel(x,y,!Color);
-		 }
-		 else
-		 {
-			 Paint_SetPixel(x,y,Color);
-		 }
-		 x++;
-		 temp<<=1;
-		}
-		if((x-x0)==sizex)
-		{
-			x=x0;
-			y++;
-		}
-		j++;
-//    delayMicroseconds(10); // 延时微秒
-	}
+/*
+Function Description: Display an image
+Interface Description:
+    x: Image x coordinate
+    y: Image y coordinate
+    sizeX: image x resolution
+    sizeY: image y resolution
+    BMP: Image data to display
+    color: pixel color parameter
+Return: None
+*/
+void EPD_ShowPicture(uint16_t x, uint16_t y, uint16_t sizeX, uint16_t sizeY, const uint8_t BMP[], uint16_t color) {
+    uint16_t j = 0, t;
+    uint16_t i, temp, x0;
+    uint16_t typefaceNum = sizeY * (sizeX / 8 + ((sizeX % 8) ? 1 : 0));
+    x0 = x;
+    for (i = 0; i < typefaceNum; i++) {
+        temp = BMP[j];
+        for (t = 0; t < 8; t++) {
+            if (temp & 0x80) {
+                Paint_SetPixel(x, y, !color);
+            }
+            else {
+                Paint_SetPixel(x, y, color);
+            }
+            x++;
+            temp << 1;
+        }
+        if ((x - x0) == sizeX) {
+            x = x0;
+            y++;
+        }
+        j++;
+        // delayMicroseconds(10);
+    }
+}
+
+/*
+Function Description: 
+Interface Description:
+    x: 
+    y: 
+    num: The number of floats to be displayed
+    len: The number of digits of a number
+    pre: Floating-point precision
+    sizeY: Displays the string size size
+    color: Pixel color parameter
+Return: None
+*/
+void EPD_ShowWatch(uint16_t x, uint16_t y, float num, uint8_t len, uint8_t pre, uint8_t sizeY, uint8_t color) {
+    uint8_t t, temp, sizeX;
+    uint16_t num1;
+    sizeX = sizeY / 2;
+    num1 = num * EPD_Pow(10, pre);
+    for (t = 0; t < len; t++) {
+        temp = (num1 / EPD_Pow(10, len - t - 1)) % 10;
+        if (t == (len - pre)) {
+            EPD_ShowChar(x + (len - pre) * sizeX + (sizeX / 2 - 2), y - 6, ':', sizeY, color);
+            t++;
+            len += 1;
+        }
+        EPD_ShowChar(x + t * sizeX, y, temp + 48, sizeY, color);
+    }
 }

@@ -1,61 +1,40 @@
 #include "spi.h"
+#include "io.h"
 
-void EPD_GPIOInit(void)
-{
-    pinMode(SCK, OUTPUT);
-    pinMode(MOSI, OUTPUT);
-    pinMode(RES, OUTPUT);
-    pinMode(DC, OUTPUT);
-    pinMode(CS, OUTPUT);
-    pinMode(BUSY, INPUT);
+void INITIALIZE_SPI_GPIO(void) {
+    pinMode(DISP_SPI_COPI, OUTPUT);
+    pinMode(DISP_SPI_SCK, OUTPUT);
+    pinMode(DISP_SPI_CS, OUTPUT);
+    pinMode(DISP_SPI_DC, OUTPUT);
+    pinMode(DISP_SPI_RES, OUTPUT);
+    pinMode(DISP_SPI_BUSY, INPUT);
 }
 
-/**
- * @brief       IO模拟SPI发送一个字节数据
- * @param       dat: 需要发送的字节数据
- * @retval      无
- */
-void EPD_WR_Bus(uint8_t dat)
-{
+void DISP_SPI_WRITE_BYTE(uint8_t data){
     uint8_t i;
-    EPD_CS_Clr();
-    for (i = 0; i < 8; i++)
-    {
-        EPD_SCK_Clr();
-        if (dat & 0x80)
-        {
-            EPD_MOSI_Set();
+    clearDispCS(); // Tell the display to start listening
+    for (i = 0; i < 8; i++) {
+        clearDispSCK(); // Pulls clock low for new bit
+        if (data & 0x80) { // Checks MSB and sets data line accordingly
+            setDispCOPI(); // Set data line high for 1
         }
-        else
-        {
-            EPD_MOSI_Clr();
+        else {
+            clearDispCOPI(); // Pul data line low for 0
         }
-        EPD_SCK_Set();
-        dat <<= 1;
+        setDispSCK(); // Sets clock high to write the bit to the display
+        data <<= 1; // Shift bits one to the left (toward MSB)
     }
-    EPD_CS_Set();
+    setDispCS(); // Deselect the device (complete transmission)
 }
 
-/**
- * @brief       向液晶写寄存器命令
- * @param       reg: 要写的命令
- * @retval      无
- */
-void EPD_WR_REG(uint8_t reg)
-{
-    EPD_DC_Clr();
-    EPD_WR_Bus(reg);
-    EPD_DC_Set();
+void DISP_SPI_WRITE_COMMAND(uint8_t registerCommand){
+    clearDispDC(); // Tell display to expect a command
+    DISP_SPI_WRITE_BYTE(registerCommand);
+    setDispDC(); // Return to data writing
 }
 
-/**
- * @brief       向液晶写一个字节数据
- * @param       dat: 要写的数据
- * @retval      无
- */
-void EPD_WR_DATA8(uint8_t dat)
-{
-    EPD_DC_Set();
-    EPD_WR_Bus(dat);
-    EPD_DC_Set();
+void DISP_SPI_WRITE_DATA(uint8_t data){
+    setDispDC(); // Tell display to expect data
+    DISP_SPI_WRITE_BYTE(data);
+    clearDispDC(); // Return to command writing
 }
