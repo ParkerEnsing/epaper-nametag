@@ -46,6 +46,14 @@ void setup() {
   // delay(CYCLE_PERIOD);
   // clear_all();
 
+  // Display UI example image
+  // EPD_ShowPicture(0, 0, 792, 272, gImage_home, WHITE);
+  // EPD_Display(ImageBW);
+  // EPD_FastUpdate();
+  // EPD_DeepSleep();
+  // delay(CYCLE_PERIOD);
+  // clear_all();
+
   // // Display inverted image
   // EPD_ShowPicture(0, 0, 792, 272, gImage_global_1, BLACK);
   // EPD_Display(ImageBW);
