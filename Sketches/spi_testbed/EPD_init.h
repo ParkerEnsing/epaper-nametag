@@ -1,7 +1,7 @@
 #ifndef _EPD_INIT_H_
 #define _EPD_INIT_H_
 
-#include "spi.h"
+#include "disp_spi.h"
 
 #define DISPLAY_WIDTH 800
 #define DISPLAY_HEIGHT 272

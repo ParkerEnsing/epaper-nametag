@@ -1,7 +1,7 @@
-#include "spi.h"
+#include "disp_spi.h"
 #include "io.h"
 
-void INITIALIZE_SPI_GPIO(void) {
+void INITIALIZE_DISP_SPI_GPIO(void) {
     pinMode(DISP_SPI_COPI, OUTPUT);
     pinMode(DISP_SPI_SCK, OUTPUT);
     pinMode(DISP_SPI_CS, OUTPUT);
@@ -10,7 +10,7 @@ void INITIALIZE_SPI_GPIO(void) {
     pinMode(DISP_SPI_BUSY, INPUT);
 }
 
-void DISP_SPI_WRITE_BYTE(uint8_t data){
+void SPI_WRITE_BYTE_DISP(uint8_t data){
     uint8_t i;
     clearDispCS(); // Tell the display to start listening
     for (i = 0; i < 8; i++) {
@@ -27,14 +27,14 @@ void DISP_SPI_WRITE_BYTE(uint8_t data){
     setDispCS(); // Deselect the device (complete transmission)
 }
 
-void DISP_SPI_WRITE_COMMAND(uint8_t registerCommand){
+void SPI_WRITE_COMMAND_DISP(uint8_t registerCommand){
     clearDispDC(); // Tell display to expect a command
-    DISP_SPI_WRITE_BYTE(registerCommand);
+    SPI_WRITE_BYTE_DISP(registerCommand);
     setDispDC(); // Return to data writing
 }
 
-void DISP_SPI_WRITE_DATA(uint8_t data){
+void SPI_WRITE_DATA_DISP(uint8_t data){
     setDispDC(); // Tell display to expect data
-    DISP_SPI_WRITE_BYTE(data);
+    SPI_WRITE_BYTE_DISP(data);
     clearDispDC(); // Return to command writing
 }
