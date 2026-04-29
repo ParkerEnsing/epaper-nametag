@@ -1,7 +1,7 @@
 #ifndef _EPD_INIT_H_
 #define _EPD_INIT_H_
 
-#include "spi.h"
+#include "disp_spi.h"
 
 #define DISPLAY_WIDTH 800
 #define DISPLAY_HEIGHT 272
@@ -9,9 +9,9 @@
 #define WHITE 0xFF
 #define BLACK 0x00
 
-//#define ALLSCREEN_GRAGHBYTES 27200/2 // = SOURCE_BYTES * GATE_BITS
+//#define ALLSCREEN_BYTES 27200/2 // = SOURCE_BYTES * GATE_BITS
 
-#define SOURCE_BYTES 400/8
+#define SOURCE_BYTES 400 / 8
 #define GATE_BITS 272
 #define ALLSCREEN_BYTES SOURCE_BYTES * GATE_BITS
 

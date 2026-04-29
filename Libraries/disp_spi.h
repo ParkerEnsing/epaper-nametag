@@ -1,5 +1,5 @@
-#ifndef _SPI_H_
-#define _SPI_H_
+#ifndef _DISP_SPI_H_
+#define _DISP_SPI_H_
 
 #include <Arduino.h>
 #include "io.h"
@@ -21,9 +21,9 @@
 
 #define readDispBusy digitalRead(DISP_SPI_BUSY)
 
-void INITIALIZE_SPI_GPIO(void);
-void DISP_SPI_WRITE_BYTE(uint8_t data);
-void DISP_SPI_WRITE_COMMAND(uint8_t registerCommand);
-void DISP_SPI_WRITE_DATA(uint8_t data);
+void INITIALIZE_DISP_SPI_GPIO(void);
+void SPI_WRITE_BYTE_DISP(uint8_t data);
+void SPI_WRITE_COMMAND_DISP(uint8_t registerCommand);
+void SPI_WRITE_DATA_DISP(uint8_t data);
 
 #endif
