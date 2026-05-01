@@ -39,82 +39,82 @@ void setup() {
 
   EPD_FastMode1Init();
   // Display default image
-  // EPD_ShowPicture(0, 0, 792, 272, gImage_global_1, WHITE);
-  // EPD_Display(ImageBW);
-  // EPD_FastUpdate();
-  // EPD_DeepSleep();
-  // delay(CYCLE_PERIOD);
-  // clear_all();
+  EPD_ShowPicture(0, 0, 792, 272, gImage_global_1, WHITE);
+  EPD_Display(ImageBW);
+  EPD_FastUpdate();
+  EPD_DeepSleep();
+  delay(CYCLE_PERIOD);
+  clear_all();
 
   // Display UI example image
-  // EPD_ShowPicture(0, 0, 792, 272, gImage_home, WHITE);
-  // EPD_Display(ImageBW);
-  // EPD_FastUpdate();
-  // EPD_DeepSleep();
-  // delay(CYCLE_PERIOD);
-  // clear_all();
+  EPD_ShowPicture(0, 0, 792, 272, gImage_home, WHITE);
+  EPD_Display(ImageBW);
+  EPD_FastUpdate();
+  EPD_DeepSleep();
+  delay(CYCLE_PERIOD);
+  clear_all();
 
-  // // Display inverted image
-  // EPD_ShowPicture(0, 0, 792, 272, gImage_global_1, BLACK);
-  // EPD_Display(ImageBW);
-  // EPD_FastUpdate();
-  // EPD_DeepSleep();
-  // delay(CYCLE_PERIOD);
-  // clear_all();
+  // Display inverted image
+  EPD_ShowPicture(0, 0, 792, 272, gImage_global_1, BLACK);
+  EPD_Display(ImageBW);
+  EPD_FastUpdate();
+  EPD_DeepSleep();
+  delay(CYCLE_PERIOD);
+  clear_all();
 
-  // // Display text
-  // Paint_Clear(WHITE);
-  // displayLongText(0, 0, text, 24, BLACK);
-  // EPD_Display(ImageBW);
-  // EPD_FastUpdate();
-  // EPD_DeepSleep();
-  // delay(CYCLE_PERIOD);
-  // clear_all();
+  // Display text
+  Paint_Clear(WHITE);
+  displayLongText(0, 0, text, 24, BLACK);
+  EPD_Display(ImageBW);
+  EPD_FastUpdate();
+  EPD_DeepSleep();
+  delay(CYCLE_PERIOD);
+  clear_all();
 
-  // // Draw a line
-  // Paint_Clear(WHITE);
-  // EPD_DrawLine(0, 0, 792, 272, BLACK);
-  // EPD_Display(ImageBW);
-  // EPD_FastUpdate();
-  // EPD_DeepSleep();
-  // delay(CYCLE_PERIOD);
-  // clear_all();
+  // Draw a line
+  Paint_Clear(WHITE);
+  EPD_DrawLine(0, 0, 792, 272, BLACK);
+  EPD_Display(ImageBW);
+  EPD_FastUpdate();
+  EPD_DeepSleep();
+  delay(CYCLE_PERIOD);
+  clear_all();
 
-  // // Draw a hollow rectangle
-  // Paint_Clear(WHITE);
-  // EPD_DrawRectangle(20, 20, 772, 252, BLACK, 0);
-  // EPD_Display(ImageBW);
-  // EPD_FastUpdate();
-  // EPD_DeepSleep();
-  // delay(CYCLE_PERIOD);
-  // clear_all();
+  // Draw a hollow rectangle
+  Paint_Clear(WHITE);
+  EPD_DrawRectangle(20, 20, 772, 252, BLACK, 0);
+  EPD_Display(ImageBW);
+  EPD_FastUpdate();
+  EPD_DeepSleep();
+  delay(CYCLE_PERIOD);
+  clear_all();
 
-  // // Draw a filled rectangle
-  // Paint_Clear(WHITE);
-  // EPD_DrawRectangle(20, 20, 772, 252, BLACK, 1);
-  // EPD_Display(ImageBW);
-  // EPD_FastUpdate();
-  // EPD_DeepSleep();
-  // delay(CYCLE_PERIOD);
-  // clear_all();
+  // Draw a filled rectangle
+  Paint_Clear(WHITE);
+  EPD_DrawRectangle(20, 20, 772, 252, BLACK, 1);
+  EPD_Display(ImageBW);
+  EPD_FastUpdate();
+  EPD_DeepSleep();
+  delay(CYCLE_PERIOD);
+  clear_all();
 
-  // // Draw a hollow circle
-  // Paint_Clear(WHITE);
-  // EPD_DrawCircle(792 / 2, 272 / 2, 100, BLACK, 0);
-  // EPD_Display(ImageBW);
-  // EPD_FastUpdate();
-  // EPD_DeepSleep();
-  // delay(CYCLE_PERIOD);
-  // clear_all();
+  // Draw a hollow circle
+  Paint_Clear(WHITE);
+  EPD_DrawCircle(792 / 2, 272 / 2, 100, BLACK, 0);
+  EPD_Display(ImageBW);
+  EPD_FastUpdate();
+  EPD_DeepSleep();
+  delay(CYCLE_PERIOD);
+  clear_all();
 
-  // // Draw a hollow circle
-  // Paint_Clear(WHITE);
-  // EPD_DrawCircle(792 / 2, 272 / 2, 100, BLACK, 1);
-  // EPD_Display(ImageBW);
-  // EPD_FastUpdate();
-  // EPD_DeepSleep();
-  // delay(CYCLE_PERIOD);
-  // clear_all();
+  // Draw a hollow circle
+  Paint_Clear(WHITE);
+  EPD_DrawCircle(792 / 2, 272 / 2, 100, BLACK, 1);
+  EPD_Display(ImageBW);
+  EPD_FastUpdate();
+  EPD_DeepSleep();
+  delay(CYCLE_PERIOD);
+  clear_all();
 
   // Draw an image from primatives
   Paint_Clear(BLACK);
