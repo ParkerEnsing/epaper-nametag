@@ -1,4 +1,4 @@
-#include <Ardiuno.h>
+#include <Arduino.h>
 #include "EPD_init.h"
 #include "disp_spi.h"
 
