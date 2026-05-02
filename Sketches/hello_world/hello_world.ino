@@ -31,8 +31,8 @@ void setup() {
   pinMode(SCREEN_PWR, OUTPUT);
   digitalWrite(SCREEN_PWR, HIGH);
 
-  EPD_GPIOInit();
-  Paint_NewImage(ImageBW, EPD_W, EPD_H, Rotation, WHITE);
+  INITIALIZE_DISP_SPI_GPIO();
+  Paint_NewImage(ImageBW, DISPLAY_WIDTH, DISPLAY_HEIGHT, ROTATION, WHITE);
   Paint_Clear(WHITE);
   
   clear_all();
