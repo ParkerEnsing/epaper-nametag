@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "disp_spi.h"
 #include "io.h"
 

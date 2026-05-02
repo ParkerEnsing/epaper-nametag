@@ -1,3 +1,4 @@
+#include <Ardiuno.h>
 #include "EPD_init.h"
 #include "disp_spi.h"
 

@@ -1,4 +1,4 @@
-// #include <Arduino.h>
+#include <Arduino.h>
 #include "EPD.h"
 #include "EPD_init.h"
 #include "EPDfont.h"
