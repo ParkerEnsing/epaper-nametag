@@ -8,9 +8,9 @@
 #define BLACK 0x00
 
 
-EPaperDisplay::EPaperDisplay(uint16_t x, uint16_t y) {
-    setXResolution(x);
-    setYResolution(y);
+EPaperDisplay::EPaperDisplay(uint16_t xResolution, uint16_t yResolution) {
+    setXResolution(xResolution);
+    setYResolution(yResolution);
 }
 
 
@@ -44,6 +44,56 @@ void EPaperDisplay::setYResolution(uint16_t y) {
 }
 
 
+void EPaperDisplay::begin() {
+
+}
+
+
+void EPaperDisplay::display(const uint8_t *ImageBW) {
+
+}
+
+
+void EPaperDisplay::update() {
+
+}
+
+
+void EPaperDisplay::partialUpdate() {
+
+}
+
+
+void EPaperDisplay::fastModeInit() {
+
+}
+
+
+void EPaperDisplay::fastUpdate() {
+
+}
+
+
+void EPaperDisplay::fastInvert(const unsigned char *data) {
+
+}
+
+
+void EPaperDisplay::clear() {
+
+}
+
+
+void EPaperDisplay::hwReset() {
+
+}
+
+
+void EPaperDisplay::deepSleep() {
+
+}
+
+
 void EPaperDisplay::_setSourceBytes(uint16_t numberOfBytes) {
     _sourceBytes = numberOfBytes;
     _totalScreenBytes = _sourceBytes * _gateBytes;
@@ -53,4 +103,29 @@ void EPaperDisplay::_setSourceBytes(uint16_t numberOfBytes) {
 void EPaperDisplay::_setGateBytes(uint16_t numberOfBytes) {
     _gateBytes = numberOfBytes;
     _totalScreenBytes = _sourceBytes * _gateBytes;
+}
+
+
+void EPaperDisplay::_busyHold() {
+
+}
+
+
+void EPaperDisplay::_setRAMWindowPri() {
+
+}
+
+
+void EPaperDisplay::_setRAMWindowSec() {
+    
+}
+
+
+void EPaperDisplay::_setRAMCursorPri() {
+    
+}
+
+
+void EPaperDisplay::_setRAMCursorSec() {
+    
 }
