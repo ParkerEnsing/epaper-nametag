@@ -2,6 +2,17 @@
 #include "io.h"
 #include <SPI.h>
 
+// https://www.elecrow.com/download/product/DIS08792E/SSD1683_Datasheet.PDF
+
+
+#define readBusy digitalRead(DISP_SPI_BUSY)
+#define setCS() digitalWrite(DISP_SPI_CS, HIGH)
+#define clearCS() digitalWrite(DISP_SPI_CS, LOW)
+#define setDC() digitalWrite(DISP_SPI_DC, HIGH)
+#define clearDC() digitalWrite(DISP_SPI_DC, LOW)
+#define setRES() digitalWrite(DISP_SPI_RES, HIGH)
+#define clearRES() digitalWrite(DISP_SPI_RES, LOW)
+
 
 EPaperDisplay::EPaperDisplay() {}
 
@@ -10,8 +21,10 @@ void EPaperDisplay::begin() {
     pinMode(DISP_POWER, OUTPUT);
     digitalWrite(DISP_POWER, HIGH);
 
-    SPI.begin();
-
+    pinMode(DISP_SPI_BUSY, INPUT);
+    pinMode(DISP_SPI_DC, OUTPUT);
+    pinMode(DISP_SPI_RES, OUTPUT);
+    SPI.begin(DISP_SPI_SCK, -1, DISP_SPI_COPI, DISP_SPI_CS);
 }
 
 
@@ -65,8 +78,35 @@ void EPaperDisplay::deepSleep() {
 }
 
 
-void EPaperDisplay::_busyHold() {
+void EPaperDisplay::_writeByte(uint8_t byteToWrite) {
+    clearCS();
+    SPI.beginTransaction(SPISettings(SPI_MAX_SPEED, SPI_DATA_ORDER, SPI_DATA_MODE));
+    SPI.transfer(byteToWrite);
+    SPI.endTransaction();
+    setCS();
+}
 
+
+void EPaperDisplay::_writeCommand(uint8_t commandByte) {
+    clearDC();
+    _writeByte(commandByte);
+    setDC();
+}
+
+
+void EPaperDisplay::_writeData(uint8_t dataByte) {
+    setDC();
+    _writeByte(dataByte);
+    clearDC();
+}
+
+
+void EPaperDisplay::_busyHold() {
+    while (1) {
+        if (readBusy == LOW) {
+            break;
+        }
+    }
 }
 
 

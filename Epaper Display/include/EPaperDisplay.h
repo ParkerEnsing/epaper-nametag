@@ -12,6 +12,9 @@ class EPaperDisplay {
         static const uint8_t SOURCE_BYTES = 50; // 400 bits per SSD1683 row divided by 8
         static const uint16_t GATE_BITS = 272; // number of SSD1683 columns (equal to vertical resolution)
         static const uint16_t TOTAL_SCREEN_BYTES = 13600; // source bytes x gate bits
+        static const uint32_t SPI_MAX_SPEED = 20000000; // Hz
+        static const uint8_t SPI_DATA_ORDER = MSBFIRST;
+        static const uint8_t SPI_DATA_MODE = SPI_MODE2;
         EPaperDisplay();
         void begin();
         void end();
@@ -25,6 +28,9 @@ class EPaperDisplay {
         void hwReset();
         void deepSleep();
     private:
+        void _writeByte(uint8_t byteToWrite);
+        void _writeCommand(uint8_t commandByte);
+        void _writeData(uint8_t dataByte);
         void _busyHold();
         void _setRAMWindowPri();
         void _setRAMCursorPri();
@@ -32,6 +38,5 @@ class EPaperDisplay {
         void _setRAMCursorSec();
         void _fillRedRAM();
 };
-
 
 #endif
