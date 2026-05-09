@@ -24,7 +24,7 @@ void EPaperDisplay::begin() {
     pinMode(DISP_SPI_BUSY, INPUT);
     pinMode(DISP_SPI_DC, OUTPUT);
     pinMode(DISP_SPI_RES, OUTPUT);
-    SPI.begin(DISP_SPI_SCK, -1, DISP_SPI_COPI, DISP_SPI_CS);
+    SPI.begin(DISP_SPI_SCK, -1, DISP_SPI_COPI, DISP_SPI_CS); // No CIPO connection
 }
 
 
