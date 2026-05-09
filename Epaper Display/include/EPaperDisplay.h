@@ -7,12 +7,14 @@
 
 class EPaperDisplay {
     public:
-        EPaperDisplay(uint16_t xResolution, uint16_t yResolution);
-        uint16_t getXResolution();
-        void setXResolution(uint16_t x);
-        uint16_t getYResolution();
-        void setYResolution(uint16_t y);
+        static const uint16_t X = 792;
+        static const uint16_t Y = 272;
+        static const uint8_t SOURCE_BYTES = 50; // 400 bits per SSD1683 row divided by 8
+        static const uint16_t GATE_BITS = 272; // number of SSD1683 columns (equal to vertical resolution)
+        static const uint16_t TOTAL_SCREEN_BYTES = 13600; // source bytes x gate bits
+        EPaperDisplay();
         void begin();
+        void end();
         void display(const uint8_t *ImageBW);
         void update();
         void partialUpdate();
@@ -23,13 +25,6 @@ class EPaperDisplay {
         void hwReset();
         void deepSleep();
     private:
-        uint16_t _x;
-        uint16_t _y;
-        uint16_t _sourceBytes;
-        uint16_t _gateBytes;
-        uint32_t _totalScreenBytes;
-        void _setSourceBytes(uint16_t numberOfBytes);
-        void _setGateBytes(uint16_t numberOfBytes);
         void _busyHold();
         void _setRAMWindowPri();
         void _setRAMCursorPri();
