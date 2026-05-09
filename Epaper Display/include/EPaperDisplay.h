@@ -19,9 +19,10 @@ class EPaperDisplay {
         void begin();
         void end();
         void display(const uint8_t *ImageBW);
+        void initialize();
         void update();
         void partialUpdate();
-        void fastModeInit();
+        void initializeFastMode();
         void fastUpdate();
         void fastInvert(const unsigned char *data);
         void clear();
