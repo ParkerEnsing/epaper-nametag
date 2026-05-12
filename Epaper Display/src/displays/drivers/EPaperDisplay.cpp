@@ -33,6 +33,30 @@ void EPaperDisplay::end() {
 }
 
 
+void EPaperDisplay::render(const uint8_t *imageAddress, bool useFastMode = true, bool enterSleep = true) {
+    initializeFastMode();
+    clear();
+
+    if (useFastMode) {
+        fastUpdate();
+    } else {
+        update();
+    }
+
+    display(imageAddress);
+
+    if (useFastMode) {
+        fastUpdate();
+    } else {
+        update();
+    }
+    
+    if (enterSleep) {
+        deepSleep();
+    }
+}
+
+
 // Write data from an image to display pixels
 // Note: Vertically scans from top to bottom, left to right
 void EPaperDisplay::display(const uint8_t *imageAddress) {

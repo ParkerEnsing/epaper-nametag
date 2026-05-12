@@ -18,6 +18,7 @@ class EPaperDisplay {
         EPaperDisplay();
         void begin();
         void end();
+        void render(const uint8_t *imageAddress, bool useFastMode, bool enterSleep);
         void display(const uint8_t *imageAddress);
         void initialize();
         void update();
