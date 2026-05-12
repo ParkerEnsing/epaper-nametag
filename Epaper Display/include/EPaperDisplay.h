@@ -18,7 +18,7 @@ class EPaperDisplay {
         EPaperDisplay();
         void begin();
         void end();
-        void display(const uint8_t *ImageBW);
+        void display(const uint8_t *imageAddress);
         void initialize();
         void update();
         void partialUpdate();

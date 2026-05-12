@@ -35,7 +35,7 @@ void EPaperDisplay::end() {
 
 // Write data from an image to display pixels
 // Note: Vertically scans from top to bottom, left to right
-void EPaperDisplay::display(const uint8_t *ImageBW) {
+void EPaperDisplay::display(const uint8_t *imageAddress) {
     uint32_t i;
     uint8_t tempOriginal;
     uint32_t tempCol = 0;
@@ -45,7 +45,7 @@ void EPaperDisplay::display(const uint8_t *ImageBW) {
     _writeCommand(0x24); // Command: Write RAM (Black White) / RAM 0x24 00100100
     // Scan across image and write values to RAM
     for (i = 0; i < TOTAL_SCREEN_BYTES; i++) {
-        tempOriginal = *(ImageBW + tempLine * SOURCE_BYTES * 2 + tempCol); // Retrieve image pixel address
+        tempOriginal = *(imageAddress + tempLine * SOURCE_BYTES * 2 + tempCol); // Retrieve image pixel address
         tempLine++;
         if (tempLine >= GATE_BITS) {
             tempCol++;
@@ -58,7 +58,7 @@ void EPaperDisplay::display(const uint8_t *ImageBW) {
     _setRAMCursorSec();
     _writeCommand(0xA4); // 10100100
     for (i = 0; i < TOTAL_SCREEN_BYTES; i++) {
-        tempOriginal = *(ImageBW + tempLine * SOURCE_BYTES * 2 + tempCol);
+        tempOriginal = *(imageAddress + tempLine * SOURCE_BYTES * 2 + tempCol);
         tempLine++;
         if (tempLine >= GATE_BITS) {
             tempCol++;
