@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "EPD.h"
 #include "pic_home.h"
+#include "EPaperDisplay.h"
 
 /*
 How to set up the screen:
@@ -32,93 +33,62 @@ void clear_all();
 
 
 void setup() {
-  pinMode(SCREEN_PWR, OUTPUT);
-  digitalWrite(SCREEN_PWR, HIGH);
+  EPaperDisplay EPD;
+  EPD.begin();
 
-  INITIALIZE_DISP_SPI_GPIO();
   Paint_NewImage(ImageBW, DISPLAY_WIDTH, DISPLAY_HEIGHT, ROTATION, WHITE);
   Paint_Clear(WHITE);
+  EPD.render(ImageBW, false, true);
   
-  clear_all();
-
-  EPD_FastMode1Init();
-  // Display default image
   EPD_ShowPicture(0, 0, 792, 272, gImage_global_1, WHITE);
-  EPD_Display(ImageBW);
-  EPD_FastUpdate();
-  EPD_DeepSleep();
+  EPD.render(ImageBW, true, true);
   delay(CYCLE_PERIOD);
-  clear_all();
 
   // Display UI example image
   EPD_ShowPicture(0, 0, 792, 272, gImage_home, WHITE);
-  EPD_Display(ImageBW);
-  EPD_FastUpdate();
-  EPD_DeepSleep();
+  EPD.render(ImageBW, true, true);
   delay(CYCLE_PERIOD);
-  clear_all();
 
   // Display inverted image
   EPD_ShowPicture(0, 0, 792, 272, gImage_global_1, BLACK);
-  EPD_Display(ImageBW);
-  EPD_FastUpdate();
-  EPD_DeepSleep();
+  EPD.render(ImageBW, true, true);
   delay(CYCLE_PERIOD);
-  clear_all();
 
   // Display text
   Paint_Clear(WHITE);
   displayLongText(0, 0, text, 24, BLACK);
-  EPD_Display(ImageBW);
-  EPD_FastUpdate();
-  EPD_DeepSleep();
+  EPD.render(ImageBW, true, true);
   delay(CYCLE_PERIOD);
-  clear_all();
 
   // Draw a line
   Paint_Clear(WHITE);
   EPD_DrawLine(0, 0, 792, 272, BLACK);
-  EPD_Display(ImageBW);
-  EPD_FastUpdate();
-  EPD_DeepSleep();
+  EPD.render(ImageBW, true, true);
   delay(CYCLE_PERIOD);
-  clear_all();
 
   // Draw a hollow rectangle
   Paint_Clear(WHITE);
   EPD_DrawRectangle(20, 20, 772, 252, BLACK, 0);
-  EPD_Display(ImageBW);
-  EPD_FastUpdate();
-  EPD_DeepSleep();
+  EPD.render(ImageBW, true, true);
   delay(CYCLE_PERIOD);
-  clear_all();
 
   // Draw a filled rectangle
   Paint_Clear(WHITE);
   EPD_DrawRectangle(20, 20, 772, 252, BLACK, 1);
-  EPD_Display(ImageBW);
-  EPD_FastUpdate();
-  EPD_DeepSleep();
+  EPD.render(ImageBW, true, true);
   delay(CYCLE_PERIOD);
-  clear_all();
 
   // Draw a hollow circle
   Paint_Clear(WHITE);
   EPD_DrawCircle(792 / 2, 272 / 2, 100, BLACK, 0);
-  EPD_Display(ImageBW);
-  EPD_FastUpdate();
-  EPD_DeepSleep();
+  EPD.render(ImageBW, true, true);
   delay(CYCLE_PERIOD);
-  clear_all();
 
   // Draw a hollow circle
   Paint_Clear(WHITE);
   EPD_DrawCircle(792 / 2, 272 / 2, 100, BLACK, 1);
-  EPD_Display(ImageBW);
-  EPD_FastUpdate();
-  EPD_DeepSleep();
+  EPD.render(ImageBW, true, true);
   delay(CYCLE_PERIOD);
-  clear_all();
 
   // Draw an image from primatives
   Paint_Clear(BLACK);
@@ -128,11 +98,8 @@ void setup() {
   EPD_DrawCircle(792 / 2, 272 / 2, 10, WHITE, 1);
   EPD_DrawLine(792 / 2 - 5, 272 / 2, 792 / 2 + 5, 272 / 2, BLACK);
   EPD_DrawLine(792 / 2, 272 / 2 - 5, 792 / 2, 272 / 2 + 5, BLACK);
-  EPD_Display(ImageBW);
-  EPD_FastUpdate();
-  EPD_DeepSleep();
+  EPD.render(ImageBW, true, true);
   delay(CYCLE_PERIOD);
-  clear_all();
 }
 
 
