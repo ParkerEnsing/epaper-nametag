@@ -17,14 +17,31 @@
 EPaperDisplay::EPaperDisplay() {}
 
 
+/*
+How to set up the screen:
+  1) Make sure the screen is powered:
+  2) Initialize the SPI GPIO
+  3) Create the image struct with an image buffer
+  4) Initialize the image buffer with black or white (optional, I think)
+  5) Set the update mode, probably FastMode1
+  6) Clear the display (optional but recommended)
+  7) Update the display
+*/
 void EPaperDisplay::begin() {
+    // power on
     pinMode(DISP_POWER, OUTPUT);
     digitalWrite(DISP_POWER, HIGH);
+    delay(10);
 
+    // configure SPI
     pinMode(DISP_SPI_BUSY, INPUT);
     pinMode(DISP_SPI_DC, OUTPUT);
     pinMode(DISP_SPI_RES, OUTPUT);
     SPI.begin(DISP_SPI_SCK, -1, DISP_SPI_COPI, DISP_SPI_CS); // No CIPO connection
+
+    // HW/SW reset
+    initialize();
+    delay(10);
 }
 
 
@@ -33,6 +50,14 @@ void EPaperDisplay::end() {
 }
 
 
+/*
+How to display:
+  1) EPD_FastMode1Init();
+  2) Draw content to buffer
+  3) EPD_Display(buffer);
+  4) EPD_FastUpdate();
+  5) EPD_DeepSleep(); (optional; used to save power)
+*/
 void EPaperDisplay::render(const uint8_t *imageAddress, bool useFastMode = true, bool enterSleep = true) {
     initializeFastMode();
     clear();
