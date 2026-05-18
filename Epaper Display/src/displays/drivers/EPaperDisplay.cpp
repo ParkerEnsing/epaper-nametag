@@ -62,21 +62,94 @@ void EPaperDisplay::initializeGPIO() {
 }
 
 
+// Resets hardware
+// Note: HW reset is required after entering deep sleep
+void EPaperDisplay::hwReset() {
+    delay(10);
+    clearRES();
+    delay(10);
+    setRES();
+    delay(10);
+    _busyHold();
+}
+
+
 /*
-How to display:
-  1) EPD_FastMode1Init();
-  2) Draw content to buffer
-  3) EPD_Display(buffer);
-  4) EPD_FastUpdate();
-  5) EPD_DeepSleep(); (optional; used to save power)
+The SSD1683 has a max resolution of 400 x 300, but the display is 792 x 272.
+Therefore, there are two SSD1683s that each control half of the display.
+They each have their own BW and Red RAM, so 4 units of RAM will have to be set individually.
+Refer to Table 6-4 for more information on what the following code does.
 */
-void EPaperDisplay::render(const uint8_t *imageAddress) {
-    initializeGPIO();
-    initializeFastMode();
-    display(imageAddress);
-    fastUpdate();
-    deepSleep();
-    SPI.end();
+void EPaperDisplay::clear() {
+    uint16_t i, j;
+    _setRAMWindowPri(); // Set primary RAM window
+    _setRAMCursorPri(); // Set primary RAM cursor
+    _writeCommand(0x24); // Command: Write RAM (Black White) / RAM 0x24
+    // Iterate over primary RAM bits and set to white
+    for (i = 0; i < GATE_BITS; i++) {
+        for (j = 0; j < SOURCE_BYTES; j++) {
+            _writeData(0xFF); // Sets the byte to white
+        }
+    }
+    _setRAMCursorPri(); // Move cursor back to beginning
+    _writeCommand(0x26); // Command: Write RAM (RED) / RAM 0x26
+    for (i = 0; i < GATE_BITS; i++) {
+        for (j = 0; j < SOURCE_BYTES; j++) {
+            _writeData(0x00); // Sets the byte to black
+        }
+    }
+    _setRAMWindowSec(); // Set secondary RAM window
+    _setRAMCursorSec(); // Set secondary RAM cursor
+    _writeCommand(0xA4); // Command (secondary): Write RAM (Black White) / RAM 0x24
+    for (i = 0; i < GATE_BITS; i++) {
+        for (j = 0; j < SOURCE_BYTES; j++) {
+            _writeData(0xFF); // Sets the byte to white
+        }
+    }
+    _setRAMCursorSec(); // Move cursor back to beginning
+    _writeCommand(0xA6); // Command (secondary): Write RAM (RED) / RAM 0x26
+    for (i = 0; i < GATE_BITS; i++) {
+        for (j = 0; j < SOURCE_BYTES; j++) {
+            _writeData(0x00); // Sets the byte to black
+        }
+    }
+}
+
+
+// Initialize the display by resetting the hardware and then software
+void EPaperDisplay::initialize() {
+    hwReset();
+    _busyHold();
+    _writeCommand(0x12); // SW reset
+    _busyHold();
+}
+
+
+// Initialize the display in fast mode 1
+void EPaperDisplay::initializeFastMode() {
+    initialize();
+    delay(10);
+
+    _writeCommand(0x18); // Command: Temperature Sensor Control
+    _writeData(0x80); // Select built-in temperature sensor
+
+    _writeCommand(0x22); // Command: Display Update Control 2
+    _writeData(0xB1); // operating sequence parameter
+    _writeCommand(0x20); // Comand: Master Activation
+    _busyHold();
+
+    _writeCommand(0x1A); // Command: Temperature Sensor Control (Write to temp register)
+    _writeData(0x64); // Seems to set internal temp sensor max range to 100C, per Table 6-8
+    _writeData(0x00); // Seems to set internal temp sensor min range to 0C, per Table 6-8
+
+    _writeCommand(0x22); // Command: Display Update Control 2
+    _writeData(0x91); // operating sequence parameter
+    _writeCommand(0x20); // Comand: Master Activation
+    _busyHold();
+
+    _writeCommand(0x3C); // Command: Border Waveform Control
+    _writeData(0x3); // GS Transition, VSS for VBD, select LUT3
+    _busyHold();
 }
 
 
@@ -116,15 +189,6 @@ void EPaperDisplay::display(const uint8_t *imageAddress) {
 }
 
 
-// Initialize the display by resetting the hardware and then software
-void EPaperDisplay::initialize() {
-    hwReset();
-    _busyHold();
-    _writeCommand(0x12); // SW reset
-    _busyHold();
-}
-
-
 // Updates the display with full operating sequence
 void EPaperDisplay::update() {
     _writeCommand(0x22); // Command: Display Update Control 2
@@ -154,34 +218,6 @@ void EPaperDisplay::partialUpdate() {
 }
 
 
-// Initialize the display in fast mode 1
-void EPaperDisplay::initializeFastMode() {
-    initialize();
-    delay(10);
-
-    _writeCommand(0x18); // Command: Temperature Sensor Control
-    _writeData(0x80); // Select built-in temperature sensor
-
-    _writeCommand(0x22); // Command: Display Update Control 2
-    _writeData(0xB1); // operating sequence parameter
-    _writeCommand(0x20); // Comand: Master Activation
-    _busyHold();
-
-    _writeCommand(0x1A); // Command: Temperature Sensor Control (Write to temp register)
-    _writeData(0x64); // Seems to set internal temp sensor max range to 100C, per Table 6-8
-    _writeData(0x00); // Seems to set internal temp sensor min range to 0C, per Table 6-8
-
-    _writeCommand(0x22); // Command: Display Update Control 2
-    _writeData(0x91); // operating sequence parameter
-    _writeCommand(0x20); // Comand: Master Activation
-    _busyHold();
-
-    _writeCommand(0x3C); // Command: Border Waveform Control
-    _writeData(0x3); // GS Transition, VSS for VBD, select LUT3
-    _busyHold();
-}
-
-
 // Update with faster operating sequence but no temp data or LUT
 // Note: works in quick brush mode
 void EPaperDisplay::fastUpdate() {
@@ -189,6 +225,53 @@ void EPaperDisplay::fastUpdate() {
     _writeData(0xC7); // operating sequence parameter
     _writeCommand(0x20); // Command: Master Activation
     _busyHold();
+}
+
+
+/*
+How to display:
+  1) EPD_FastMode1Init();
+  2) Draw content to buffer
+  3) EPD_Display(buffer);
+  4) EPD_FastUpdate();
+  5) EPD_DeepSleep(); (optional; used to save power)
+*/
+void EPaperDisplay::render(const uint8_t *imageAddress) {
+    initializeFastMode();
+    display(imageAddress);
+    update();
+}
+
+
+void EPaperDisplay::renderAndSleep(const uint8_t *imageAddress) {
+    render(imageAddress);
+    deepSleep();
+}
+
+
+void EPaperDisplay::fastRender(const uint8_t *imageAddress) {
+    initializeFastMode();
+    display(imageAddress);
+    fastUpdate();
+}
+
+
+void EPaperDisplay::fastRenderAndSleep(const uint8_t *imageAddress) {
+    fastRender(imageAddress);
+    deepSleep();
+}
+
+
+void EPaperDisplay::partialRender(const uint8_t *imageAddress) {
+    initializeFastMode();
+    display(imageAddress);
+    partialUpdate();
+}
+
+
+void EPaperDisplay::partialRenderAndSleep(const uint8_t *imageAddress) {
+    partialRender(imageAddress);
+    deepSleep();
 }
 
 
@@ -242,60 +325,6 @@ void EPaperDisplay::fastInvert(const unsigned char *data) {
         _writeData(0x00); // 
     }
     fastUpdate();
-}
-
-
-/*
-The SSD1683 has a max resolution of 400 x 300, but the display is 792 x 272.
-Therefore, there are two SSD1683s that each control half of the display.
-They each have their own BW and Red RAM, so 4 units of RAM will have to be set individually.
-Refer to Table 6-4 for more information on what the following code does.
-*/
-void EPaperDisplay::clear() {
-    uint16_t i, j;
-    _setRAMWindowPri(); // Set primary RAM window
-    _setRAMCursorPri(); // Set primary RAM cursor
-    _writeCommand(0x24); // Command: Write RAM (Black White) / RAM 0x24
-    // Iterate over primary RAM bits and set to white
-    for (i = 0; i < GATE_BITS; i++) {
-        for (j = 0; j < SOURCE_BYTES; j++) {
-            _writeData(0xFF); // Sets the byte to white
-        }
-    }
-    _setRAMCursorPri(); // Move cursor back to beginning
-    _writeCommand(0x26); // Command: Write RAM (RED) / RAM 0x26
-    for (i = 0; i < GATE_BITS; i++) {
-        for (j = 0; j < SOURCE_BYTES; j++) {
-            _writeData(0x00); // Sets the byte to black
-        }
-    }
-    _setRAMWindowSec(); // Set secondary RAM window
-    _setRAMCursorSec(); // Set secondary RAM cursor
-    _writeCommand(0xA4); // Command (secondary): Write RAM (Black White) / RAM 0x24
-    for (i = 0; i < GATE_BITS; i++) {
-        for (j = 0; j < SOURCE_BYTES; j++) {
-            _writeData(0xFF); // Sets the byte to white
-        }
-    }
-    _setRAMCursorSec(); // Move cursor back to beginning
-    _writeCommand(0xA6); // Command (secondary): Write RAM (RED) / RAM 0x26
-    for (i = 0; i < GATE_BITS; i++) {
-        for (j = 0; j < SOURCE_BYTES; j++) {
-            _writeData(0x00); // Sets the byte to black
-        }
-    }
-}
-
-
-// Resets hardware
-// Note: HW reset is required after entering deep sleep
-void EPaperDisplay::hwReset() {
-    delay(10);
-    clearRES();
-    delay(10);
-    setRES();
-    delay(10);
-    _busyHold();
 }
 
 

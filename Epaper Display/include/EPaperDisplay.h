@@ -19,16 +19,21 @@ class EPaperDisplay {
         void begin();
         void end();
         void initializeGPIO();
-        void render(const uint8_t *imageAddress);
-        void display(const uint8_t *imageAddress);
+        void hwReset();
+        void clear();
         void initialize();
+        void initializeFastMode();
+        void display(const uint8_t *imageAddress);
         void update();
         void partialUpdate();
-        void initializeFastMode();
         void fastUpdate();
+        void render(const uint8_t *imageAddress);
+        void renderAndSleep(const uint8_t *imageAddress);
+        void fastRender(const uint8_t *imageAddress);
+        void fastRenderAndSleep(const uint8_t *imageAddress);
+        void partialRender(const uint8_t *imageAddress);
+        void partialRenderAndSleep(const uint8_t *imageAddress);
         void fastInvert(const unsigned char *data);
-        void clear();
-        void hwReset();
         void deepSleep();
     private:
         void _writeByte(uint8_t byteToWrite);
