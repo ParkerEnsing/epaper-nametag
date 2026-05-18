@@ -12,6 +12,8 @@
 #define clearDC() digitalWrite(DISP_SPI_DC, LOW)
 #define setRES() digitalWrite(DISP_SPI_RES, HIGH)
 #define clearRES() digitalWrite(DISP_SPI_RES, LOW)
+#define setSCK() digitalWrite(DISP_SPI_SCK, HIGH);
+#define clearSCK() digitalWrite(DISP_SPI_SCK, LOW);
 
 
 EPaperDisplay::EPaperDisplay() {}
@@ -33,20 +35,30 @@ void EPaperDisplay::begin() {
     digitalWrite(DISP_POWER, HIGH);
     delay(10);
 
-    // configure SPI
-    pinMode(DISP_SPI_BUSY, INPUT);
-    pinMode(DISP_SPI_DC, OUTPUT);
-    pinMode(DISP_SPI_RES, OUTPUT);
-    SPI.begin(DISP_SPI_SCK, -1, DISP_SPI_COPI, DISP_SPI_CS); // No CIPO connection
+    initializeGPIO();
 
-    // HW/SW reset
-    initialize();
-    delay(10);
+    // initializeFastMode();
+    // clear();
+    // update();
 }
 
 
 void EPaperDisplay::end() {
+    clear();
+    SPI.end();
     digitalWrite(DISP_POWER, LOW);
+}
+
+
+void EPaperDisplay::initializeGPIO() {
+    // configure SPI
+    pinMode(DISP_SPI_BUSY, INPUT);
+    pinMode(DISP_SPI_COPI, OUTPUT);
+    pinMode(DISP_SPI_SCK, OUTPUT);
+    pinMode(DISP_SPI_CS, OUTPUT);
+    pinMode(DISP_SPI_DC, OUTPUT);
+    pinMode(DISP_SPI_RES, OUTPUT);
+    SPI.begin(DISP_SPI_SCK, -1, DISP_SPI_COPI, DISP_SPI_CS); // No CIPO connection
 }
 
 
@@ -58,27 +70,13 @@ How to display:
   4) EPD_FastUpdate();
   5) EPD_DeepSleep(); (optional; used to save power)
 */
-void EPaperDisplay::render(const uint8_t *imageAddress, bool useFastMode = true, bool enterSleep = true) {
+void EPaperDisplay::render(const uint8_t *imageAddress) {
+    initializeGPIO();
     initializeFastMode();
-    clear();
-
-    if (useFastMode) {
-        fastUpdate();
-    } else {
-        update();
-    }
-
     display(imageAddress);
-
-    if (useFastMode) {
-        fastUpdate();
-    } else {
-        update();
-    }
-    
-    if (enterSleep) {
-        deepSleep();
-    }
+    fastUpdate();
+    deepSleep();
+    SPI.end();
 }
 
 
@@ -159,6 +157,7 @@ void EPaperDisplay::partialUpdate() {
 // Initialize the display in fast mode 1
 void EPaperDisplay::initializeFastMode() {
     initialize();
+    delay(10);
 
     _writeCommand(0x18); // Command: Temperature Sensor Control
     _writeData(0x80); // Select built-in temperature sensor
@@ -260,14 +259,14 @@ void EPaperDisplay::clear() {
     // Iterate over primary RAM bits and set to white
     for (i = 0; i < GATE_BITS; i++) {
         for (j = 0; j < SOURCE_BYTES; j++) {
-            _writeData(0xFF); // Sets the pixel to white
+            _writeData(0xFF); // Sets the byte to white
         }
     }
     _setRAMCursorPri(); // Move cursor back to beginning
     _writeCommand(0x26); // Command: Write RAM (RED) / RAM 0x26
     for (i = 0; i < GATE_BITS; i++) {
         for (j = 0; j < SOURCE_BYTES; j++) {
-            _writeData(0x00); // Sets the pixel to black
+            _writeData(0x00); // Sets the byte to black
         }
     }
     _setRAMWindowSec(); // Set secondary RAM window
@@ -275,14 +274,14 @@ void EPaperDisplay::clear() {
     _writeCommand(0xA4); // Command (secondary): Write RAM (Black White) / RAM 0x24
     for (i = 0; i < GATE_BITS; i++) {
         for (j = 0; j < SOURCE_BYTES; j++) {
-            _writeData(0xFF); // Sets the pixel to white
+            _writeData(0xFF); // Sets the byte to white
         }
     }
     _setRAMCursorSec(); // Move cursor back to beginning
     _writeCommand(0xA6); // Command (secondary): Write RAM (RED) / RAM 0x26
     for (i = 0; i < GATE_BITS; i++) {
         for (j = 0; j < SOURCE_BYTES; j++) {
-            _writeData(0x00); // Sets the pixel to black
+            _writeData(0x00); // Sets the byte to black
         }
     }
 }

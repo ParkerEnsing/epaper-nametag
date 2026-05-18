@@ -14,11 +14,12 @@ class EPaperDisplay {
         static const uint16_t TOTAL_SCREEN_BYTES = 13600; // source bytes x gate bits
         static const uint32_t SPI_MAX_SPEED = 20000000; // Hz
         static const uint8_t SPI_DATA_ORDER = MSBFIRST;
-        static const uint8_t SPI_DATA_MODE = SPI_MODE2;
+        static const uint8_t SPI_DATA_MODE = SPI_MODE3;
         EPaperDisplay();
         void begin();
         void end();
-        void render(const uint8_t *imageAddress, bool useFastMode, bool enterSleep);
+        void initializeGPIO();
+        void render(const uint8_t *imageAddress);
         void display(const uint8_t *imageAddress);
         void initialize();
         void update();
