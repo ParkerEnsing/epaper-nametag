@@ -37,14 +37,16 @@ void EPaperDisplay::begin() {
 
     initializeGPIO();
 
-    // initializeFastMode();
-    // clear();
-    // update();
+    initializeFastMode();
+    clear();
+    update();
 }
 
 
 void EPaperDisplay::end() {
+    initializeFastMode();
     clear();
+    update();
     SPI.end();
     digitalWrite(DISP_POWER, LOW);
 }
@@ -225,6 +227,13 @@ void EPaperDisplay::fastUpdate() {
     _writeData(0xC7); // operating sequence parameter
     _writeCommand(0x20); // Command: Master Activation
     _busyHold();
+}
+
+
+void EPaperDisplay::clearUpdate() {
+    initializeFastMode();
+    clear();
+    update();
 }
 
 

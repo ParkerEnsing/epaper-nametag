@@ -1,0 +1,165 @@
+# EPaperDisplay
+
+## Dependencies
+Public Arduino Libraries
+- Arduino Core
+- SPI
+
+Custom Code
+- io.h
+
+## Operating Procedure
+The methods contained in the EPaperDisplay class provide access to various hardware functions of the display. Typically, these methods will be chained together in various ways to produce different effects. This section covers the processes for rendering in common use cases.
+### Initializing the Display
+Before content can be rendered on the display, the display needs to be powered on and configured for communication with the MCU. The minimum implementation to initialize an EPD can be found in the code block below.
+```
+#include "EPaperDisplay.h"
+
+EPaperDisplay EPD_1; // instantiate an EPD in global scope
+
+void setup() {
+    EPD_1.begin(); // initialize the global EP
+
+    EPaperDisplay EPD_2; // example instantiation in local scope
+    EPD_2.begin();
+
+    // perform additional setup steps
+}
+
+void loop() {
+    // looping code goes here
+}
+```
+This code shows two separate implementations: one in which the EPD is instantiated before the `setup()` function and another in which the instantiation occurs within `setup()`. Either implementation is valid and produces largely the same results. For use cases where the EPD will be utilized outside of `setup()`, like in `loop()` or custom functions, global instantiation of the EPD is necessary. For use cases that fully occur within local scope, be it `setup()`, `loop()`, or a custom function, the latter implementation is sufficient.
+### Cleaning up the Display
+When the EPD is no longer needed, steps should be taken to terminate MCU interactions with the EPD. The following code block shows to how end the EPD after it has be instantiated and initialized.
+```
+#include "EPaperDisplay.h"
+
+void setup() {
+    EPaperDisplay EPD; // instantiate the EPD
+
+    EPD.begin(); // initialize the EPD
+
+    // do stuff with the EPD
+
+    EPD.end();
+
+    // do non-EPD stuff
+}
+
+void loop() {
+    // unused in this example
+}
+```
+Strictly speaking, terminating the EPD in this manner is optional. When `end()` is called, the screen is cleared (set to all white), the SPI bus is released, and the display is powered off. If none of these functions are necessary, the display can be used without calling `end()`.
+### Rendering
+Once an EPD is instantiated and initialized, content can be rendered to it through a standard process. In generic use cases, the most straightforward way to render is to use a built-in rendering method, like `render()`, `renderAndSleep()`, and their other derivations. Each of the built-in methods uses the same general flow but with different optional steps added in. The complete process is as follows:
+
+1. Initialize Fast Mode 1
+2. Display the content
+3. Refresh the display
+4. (Optional) Place the display in deep sleep
+
+Initialization of fast mode 1 performs a series of preparation steps in the EPD firmware to get the display ready to display content. By specifying 'fast mode 1', the existance of other fast modes is implied. While the display supports a variety of display modes, fast mode 1 is the only one implemented in this library; different modes may suit custom needs, and private methods in the `EPaperDisplay` class can be manually arranged to construct bespoke display modes. Refer to the [SSD1683 datasheet](https://www.elecrow.com/download/product/DIS08792E/SSD1683_Datasheet.PDF) for additional information. <br><br>
+After the display mode is set, content is rendered by passing a `uint8_t` array to a display method that writes the data to the display RAM. <br><br>
+Once the data is in RAM, the refresh operation writes the data from RAM onto the display. Due to the physics that drive the display, this refresh process is slow compared to other, more common display technology. The screen needs to flash several times, alternating between white and black, to shift the pixels from displaying the previous image to displaying the new one. The specifics of this refresh process are controllable, and different refresh modes can be used according to need. The default method is to do a full refresh across the entire screen. This is the slowest process, but it reliably yields a crisp image with little to no visual artifacts. If faster refreshes are desired, there is also a fast mode that uses a less thorough cycle that takes less time. In most cases, the fast update is acceptable for most renders, but a full refresh should be done occasionally to clear any build up of artifacts. Finally, there is also a partial refresh mode that heavily expedites the refresh time in exchange for often poor visual fidelity. <br><br>
+By this point, the image has been rendered, so there are no more necessary steps to produce an image. There is instead an optional step to place the display into a deep sleep mode. Because e-ink displays will maintain the screen contents without power, they are a cheap and useful lower power display technology that can provide dynamic content control over long periods of time with very little power consumption. The deep sleep mode places the display into a long duration, low power mode without turning the device off. This mode is useful if the display content will not change often. If the image changes frequently, the power savings may not be worth the additional overhead. When the display is in deep sleep, a hardware reset needs to occur before the display can be refreshed again. This is primarily a consideration for custom implementations of fast mode 1 initialization; the included render methods perform a hardware and software reset automatically at the start of the render call. Custom implementations that avoid this step need to consider use of deep sleep more carefully.<br><br>
+As previously eluded to, there are several built-in render functions that prepackage variations on the standard render process. The following table identifies the key features of each method:
+
+|Function|Default Update|Fast Update|Partial Update|Deep Sleep|
+|:------|:------------:|:---------:|:------------:|:--------:|
+|`render()`|✅|❌|❌|❌|
+|`renderAndSleep()`|✅|❌|❌|✅|
+|`fastRender()`|❌|✅|❌|❌|
+|`fastRenderAndSleep()`|❌|✅|❌|✅|
+|`partialRender()`|❌|❌|✅|❌|
+|`partialRenderAndSleep()`|❌|❌|✅|✅|
+
+<br>
+Each of these functions is interchangeable and fit the same slot in the order of operations. The code example below shows how to render some graphical content to the EPD using each method.
+<br><br>
+
+```
+#include "EPaperDisplay.h"
+
+void setup() {
+    // Setup EPD
+    EPaperDisplay EPD;
+    EPD.begin();
+
+    uint8_t *image[27200]; // Create a pointer to the memory address of a byte array
+    // Draw content to the byte array
+
+    EPD.render(image);
+    delay(2000);
+
+    // Draw content to the byte array
+
+    EPD.renderAndSleep(image);
+    delay(2000);
+
+    // Draw content to the byte array
+
+    EPD.fastRender(image);
+    delay(2000);
+
+    // Draw content to the byte array
+
+    EPD.fastRenderAndSleep(image);
+    delay(2000);
+
+    // Draw content to the byte array
+
+    EPD.partialRender(image);
+    delay(2000);
+
+    // Draw content to the byte array
+
+    EPD.partialRenderAndSleep(image);
+    delay(2000);
+
+    EPD.end();
+}
+
+void loop() {
+    // Does nothing in this example
+}
+```
+After the initial setup of the EPD object, the image array is created before any render calls. For use cases taking advantage of `loop()` or custom functions, the image array should be created globally before `setup()`. Once the pointer to the array exists, render calls can be made freely. This example includes delays between render calls to allow time for the refresh to occur and observe the produced image. Code that modifies the image array should do so in-between render calls. When a render method is called, the entire render process occurs sequentially, so there are no intermission periods where new image data can be processed. The underlying components of the render methods are public methods of the `EPaperDisplay` class, so custom implementations may allow for draw calls mid-render cycle. <br><br>
+This example uses an image array of size 27200, which is a very specific number. This number is derived from the hardware of the Elecrow Crowpanel 5.79" EPaper Display. The display has a resolution of 792 x 292 pixels, and it has two SSD1683 display driver chips that store display memory as 400 x 300 bit matrices. Content data is written to the display as a serial array of 1-byte bitmasks. Each bitmask represents a sequential group of 8 pixels. Since this e-ink display is two-color (black/white), each pixel can be represented by a single bit. For example, writing the value 0xFF (binary: 11111111) would set all the pixels in that group to white. Writing 0x00 (00000000) will set all pixels in the group to black, and writing 0xAA (10101010) will cause each pixel in the group to alternate between white and black. The array that stores these bitmasks should ideally be sized to match the display's memory size. To find this value, determine the resolution - in this case 792 x 292. The height of the display is smaller than the 'height' of a single SSD1683 memory matrix, so vertical resolution is not a constraint. The horizontal resolution is almost twice the size of the memory matrix, so two matrices are required, hence the dual SSD1683 configuration. The combined SSD1683s have slightly more width than the horizontal resolution, so the difference - 8 pixels - is divided between the two driver chips. Since each SSD1683 must contend with an extra four pixels, an entire byte is still needed for the bitmask even though half of the byte won't physically be displayed. Somewhat annoyingly, the manufacturer aligned these bytes in the center of the screen, divided vertically. What this means for implementation is that whatever code determines what should be drawn on the screen should factor in this area of overlap between the memory matrices. At time of writing, a built-in function for this is planned but unimplemented. What this means for the original question regarding the size of the image array is that the total size of the combined matrix is 272 x 800, not 272 x 792. The bitmask bytes are stored horizontally along the length of the screen, so dividing the horizontal size by 8 yields the number of bytes per row: 100. Because the bytes are horizontally aligned, the vertical axis represents a summation of the bytes, so the total number of bytes needed to fill the screen is 272 x 100 = 27200. While this explanation is a bit long winded and meandering, it conveys an important mental model about how the screen is displaying images. This library specifically targets the Elecrow panel with the SSD1683s, but the core concepts here will be similar on hardware by other manufacturers. The derivation provided here can be used to determine the ideal array size for arbitrary hardware. <br><br>
+Note that this example does not include any EPD code between render calls. This implementation should be considered the minimum implementation. Most OEM codebases feature dedicated screen clears before each render call to completely erase prior images before drawing the new one on a fresh screen. Such an implemenation would something like this:
+```
+#include "EPaperDisplay.h"
+
+void setup() {
+    EPaperDisplay EPD;
+    EPD.begin();
+
+    EPD.clearUpdate(); // Do this before the first render call to clear any lingering images
+
+    uint8_t *image[27200];
+
+    // Draw some stuff
+
+    EPD.render(image);
+    delay(1000);
+
+    // Same as EPD.clearUpdate() but with fastUpdate() instead of update()
+    EPD.initializeFastMode();
+    EPD.clear();
+    EPD.fastUpdate();
+
+    // Draw more stuff
+
+    EPD.render(image);
+    delay(1000);
+
+    EPD.end();
+}
+
+void loop() {
+    // does nothing in this example
+}
+```
+The clear operation right after the EPD setup is useful for cleaning the screen if an image was still present on the display. If a clear operation happens before the display is powered off, the screen will be clean when the device is first powered back on, so clearing at setup is redundant. Oppositely, if no clear operations occur before the screen is powered off, so whatever image was last displayed will still be present when power returns. Whether that image should be cleared at setup or not will depend on the desired behavior. At the time of writing, `begin()` and `end()` include automatic screen clear operations, so manually clearing at the beginning and end of use is not needed. This behavior may change in the future.<br><br>

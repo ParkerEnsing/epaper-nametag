@@ -9,77 +9,33 @@ EPaperDisplay EPD;
 
 void setup() {
   Serial.begin(115200);
-
   EPD.begin();
 
-
-  // Serial.println("Starting vertical test pattern...");
-  // for (int i = 0; i < sizeof(canvasBuffer); i++) {
-  //   if (i % 2 == 0) {
-  //     canvasBuffer[i] = 0xFF;
-  //   } else {
-  //     canvasBuffer[i] = 0x00;
-  //   }
-  // }
-  // EPD.initializeFastMode();
-  // Serial.println("Reset complete...");
-  // EPD.display(canvasBuffer);
-  // Serial.println("Display complete...");
-  // EPD.fastUpdate();
-  // Serial.println("Updates complete...");
-  // Serial.println("Starting 2 second delay...");
-  // delay(2000);
-  // Serial.println("Rendered vertical test pattern...");
-
-  // // EPD.initializeFastMode();
-  // // EPD.clear();
-  // // EPD.update();
-
-  // Serial.println("Starting horizontal test pattern...");
-  // bool isBlack = true;
-  // for (int i = 0; i < sizeof(canvasBuffer); i++) {
-  //   uint8_t byteColor = 0x00;
-  //   if (!isBlack) {
-  //     byteColor = 0xFF;
-  //   }
-  //   canvasBuffer[i] = byteColor;
-  //   if (i % 272 * 8 == 0) {
-  //     isBlack = !isBlack;
-  //   }
-  // }
-  // EPD.display(canvasBuffer);
-  // Serial.println("Display complete...");
-  // EPD.fastUpdate();
-  // Serial.println("Updates complete...");
-  // Serial.println("Starting 2 second delay...");
-  // delay(2000);
-  // Serial.println("Rendered horizontal test pattern...");
-
-  // Canvas canvas(canvasBuffer, 792, 272, Canvas::landscape, 0xFF);
-  // canvas.begin();
+  Canvas canvas(canvasBuffer, 792, 272, Canvas::landscape, 0xFF);
+  canvas.begin();
   
-  // EPD.render(gImage_home);
-  // Serial.println("Displayed image...");
-  // delay(5000);
+  EPD.render(gImage_home);
+  Serial.println("Displayed image...");
+  delay(5000);
 
-  // Serial.println("Starting white render...");
-  // EPD.render(canvasBuffer);
-  // Serial.println("Rendered white to display...");
-  // delay(5000);
+  Serial.println("Starting white render...");
+  EPD.render(canvasBuffer);
+  Serial.println("Rendered white to display...");
+  delay(5000);
 
-  // canvas.setBackgroundColor(0x00);
-  // Serial.println("Changed background color to black...");
-  // canvas.erase();
-  // Serial.println("Erased buffer...");
-  // Serial.println("Starting black render...");
-  // EPD.render(canvasBuffer);
-  // Serial.println("Rendered black to display...");
-  // delay(5000);
+  canvas.setBackgroundColor(0x00);
+  Serial.println("Changed background color to black...");
+  canvas.erase();
+  Serial.println("Erased buffer...");
+  Serial.println("Starting black render...");
+  EPD.render(canvasBuffer);
+  Serial.println("Rendered black to display...");
+  delay(5000);
 
   // canvas.end();
   // Serial.println("Ended canvas...");
-//   EPD.end();
-//   Serial.println("Ended display...");
+  // EPD.end();
+  // Serial.println("Ended display...");
 }
 
 

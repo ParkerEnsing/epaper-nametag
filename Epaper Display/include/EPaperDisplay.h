@@ -27,6 +27,7 @@ class EPaperDisplay {
         void update();
         void partialUpdate();
         void fastUpdate();
+        void clearUpdate();
         void render(const uint8_t *imageAddress);
         void renderAndSleep(const uint8_t *imageAddress);
         void fastRender(const uint8_t *imageAddress);
