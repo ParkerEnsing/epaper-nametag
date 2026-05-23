@@ -1,7 +1,6 @@
 #ifndef CHALKBOARD_H
 #define CHALKBOARD_H
 
-#include <vector>
 #include <scribe.h>
 #include <primitiveGraphics.h>
 
@@ -47,10 +46,11 @@ class Canvas {
 class Viewport {
     public:
         Viewport();
+        void begin();
+        void end();
     private:
         int _x;
         int _y;
-        
 };
 
 #endif
