@@ -30,7 +30,7 @@ class Canvas {
         void setBackgroundColor(uint8_t color);
         uint8_t getBackgroundColor();
     private:
-        uint8_t *_canvas;
+        uint8_t* _canvas;
         uint16_t _x;
         uint16_t _y;
         uint16_t _xMemory;

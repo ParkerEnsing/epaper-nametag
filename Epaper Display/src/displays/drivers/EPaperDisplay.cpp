@@ -157,7 +157,7 @@ void EPaperDisplay::initializeFastMode() {
 
 // Write data from an image to display pixels
 // Note: Vertically scans from top to bottom, left to right
-void EPaperDisplay::display(const uint8_t *imageAddress) {
+void EPaperDisplay::display(const uint8_t* imageAddress) {
     uint32_t i;
     uint8_t tempOriginal;
     uint32_t tempCol = 0;
@@ -245,40 +245,40 @@ How to display:
   4) EPD_FastUpdate();
   5) EPD_DeepSleep(); (optional; used to save power)
 */
-void EPaperDisplay::render(const uint8_t *imageAddress) {
+void EPaperDisplay::render(const uint8_t* imageAddress) {
     initializeFastMode();
     display(imageAddress);
     update();
 }
 
 
-void EPaperDisplay::renderAndSleep(const uint8_t *imageAddress) {
+void EPaperDisplay::renderAndSleep(const uint8_t* imageAddress) {
     render(imageAddress);
     deepSleep();
 }
 
 
-void EPaperDisplay::fastRender(const uint8_t *imageAddress) {
+void EPaperDisplay::fastRender(const uint8_t* imageAddress) {
     initializeFastMode();
     display(imageAddress);
     fastUpdate();
 }
 
 
-void EPaperDisplay::fastRenderAndSleep(const uint8_t *imageAddress) {
+void EPaperDisplay::fastRenderAndSleep(const uint8_t* imageAddress) {
     fastRender(imageAddress);
     deepSleep();
 }
 
 
-void EPaperDisplay::partialRender(const uint8_t *imageAddress) {
+void EPaperDisplay::partialRender(const uint8_t* imageAddress) {
     initializeFastMode();
     display(imageAddress);
     partialUpdate();
 }
 
 
-void EPaperDisplay::partialRenderAndSleep(const uint8_t *imageAddress) {
+void EPaperDisplay::partialRenderAndSleep(const uint8_t* imageAddress) {
     partialRender(imageAddress);
     deepSleep();
 }
@@ -286,7 +286,7 @@ void EPaperDisplay::partialRenderAndSleep(const uint8_t *imageAddress) {
 
 // Forces waveform transition to clear screen quickly
 // Note: Horizontally scans from left to right, top to bottom
-void EPaperDisplay::fastInvert(const unsigned char *data) {
+void EPaperDisplay::fastInvert(const unsigned char* data) {
     unsigned int i;
     unsigned char tempOriginal;
     unsigned int tempCol = 0;

@@ -88,7 +88,7 @@ void setup() {
     EPaperDisplay EPD;
     EPD.begin();
 
-    uint8_t *image[27200]; // Create a pointer to the memory address of a byte array
+    uint8_t* image[27200]; // Create a pointer to the memory address of a byte array
     // Draw content to the byte array
 
     EPD.render(image);
@@ -138,7 +138,7 @@ void setup() {
 
     EPD.clearUpdate(); // Do this before the first render call to clear any lingering images
 
-    uint8_t *image[27200];
+    uint8_t* image[27200];
 
     // Draw some stuff
 
