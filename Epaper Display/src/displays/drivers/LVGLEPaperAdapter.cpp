@@ -38,6 +38,5 @@ void LVGL_EPAPER_ADAPTER::refreshDisplay() {
         return;
     }
 
-    _display->display(_framebuffer);
-    _display->update();
+    _display->render(_framebuffer);
 }
