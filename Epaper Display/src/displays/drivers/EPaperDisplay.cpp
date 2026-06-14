@@ -1,6 +1,7 @@
+#include "DevBoardIO.h"
 #include "EPaperDisplay.h"
-#include "io.h"
 #include <SPI.h>
+
 
 // https://www.elecrow.com/download/product/DIS08792E/SSD1683_Datasheet.PDF
 
@@ -156,7 +157,6 @@ void EPaperDisplay::initializeFastMode() {
 
 
 // Write data from an image to display pixels
-// Note: Vertically scans from top to bottom, left to right
 void EPaperDisplay::display(const uint8_t* imageAddress) {
     uint32_t i;
     uint8_t tempOriginal;
@@ -450,3 +450,4 @@ void EPaperDisplay::_fillRedRAM() {
         }
     }
 }
+
