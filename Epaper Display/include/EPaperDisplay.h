@@ -1,6 +1,11 @@
 #ifndef EPAPERDISPLAY_H
 #define EPAPERDISPLAY_H
 
+/*
+https://www.elecrow.com/download/product/DIS08792E/SSD1683_Datasheet.PDF
+https://github.com/Elecrow-RD/CrowPanel-ESP32-5.79-E-paper-HMI-Display-with-272-792/tree/master
+
+*/
 
 #include <Arduino.h>
 
