@@ -72,7 +72,7 @@ void setup() {
     lv_display_add_event_cb(disp, lv_rounder_cb, LV_EVENT_INVALIDATE_AREA, disp);
 
     lv_obj_t* label = lv_label_create(lv_screen_active());
-    lv_label_set_text(label, "Hello world");
+    lv_label_set_text(label, "Good morning, Parker");
     lv_obj_set_style_text_color(label, lv_color_black(), LV_PART_MAIN);
     lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
 
