@@ -1,6 +1,17 @@
 #include "LVGLEPaperAdapter.h"
 #include <cstring>
 
+/*
+    LVGL uses 792 visible horizontal pixels.
+
+    The physical panel memory is 800 pixels wide because the two SSD1683
+    controllers each expose 400 horizontal pixels. The 8 hidden pixels are
+    located at the center seam, 4 hidden pixels per controller.
+
+    Therefore the LVGL byte covering x = 392..399 must be split across
+    two physical panel bytes.
+*/
+
 // 1 px = 1 bit, 1 byte = 8 pxs
 static constexpr uint16_t PANEL_ROW_BYTES = EPaperDisplay::SOURCE_BYTES * 2; // 100 bytes
 static constexpr uint16_t PANEL_WIDTH_PX = PANEL_ROW_BYTES * 8; // 800 bits

@@ -93,8 +93,7 @@ void setup() {
     Serial.println("Setup complete");
 }
 
-void loop()
-{
+void loop() {
     lv_timer_handler();
 
     delay(5);
