@@ -105,5 +105,5 @@ void LVGL_EPAPER_ADAPTER::refreshDisplay() {
     if (_display == nullptr) {
         return;
     }
-    _display->renderAndSleep(_framebuffer);
+    _display->render(_framebuffer);
 }
