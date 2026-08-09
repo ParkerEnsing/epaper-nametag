@@ -126,12 +126,6 @@ void LVGL_EPAPER_ADAPTER::refreshDisplay() {
 }
 
 
-void LVGL_EPAPER_ADAPTER::commitUI(lv_display_t* disp) {
-    lv_refr_now(disp);
-    refreshDisplay();
-}
-
-
 bool LVGL_EPAPER_ADAPTER::isDirty() {
     return _isFramebufferDirty;
 }
