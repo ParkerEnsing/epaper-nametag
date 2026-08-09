@@ -12,7 +12,6 @@ class LVGL_EPAPER_ADAPTER {
         static void flush_cb(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map);
         static void rounder_cb(lv_event_t* e);
         static void refreshDisplay();
-        static void invertDisplay();
         static void commitUI(lv_display_t* disp);
         static bool isDirty();
     private:

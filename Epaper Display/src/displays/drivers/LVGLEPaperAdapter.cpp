@@ -126,14 +126,6 @@ void LVGL_EPAPER_ADAPTER::refreshDisplay() {
 }
 
 
-void LVGL_EPAPER_ADAPTER::invertDisplay() {
-    if (_display == nullptr) {
-        return;
-    }
-    _display->fastInvert(_framebuffer);
-}
-
-
 void LVGL_EPAPER_ADAPTER::commitUI(lv_display_t* disp) {
     lv_refr_now(disp);
     refreshDisplay();

@@ -4,6 +4,7 @@
 #include "assets/test_images/pic_home.h"
 #include "EPaperDisplay.h"
 #include "LVGLEPaperAdapter.h"
+#include "ui/UITheme.h"
 
 const int LV_BUFFER_DIVISIONS = 1;
 
@@ -43,7 +44,6 @@ void setup() {
     Serial.println(lv_version_patch());
 
     lv_init();
-
     lv_tick_set_cb(lv_system_tick);
 
     lv_display_t* disp = lv_display_create(EPD.X, EPD.Y);
@@ -55,21 +55,22 @@ void setup() {
 
     Serial.println("Setup complete");
 
-    lv_obj_t* label = lv_label_create(lv_screen_active());
-    lv_label_set_text(label, "Hello world");
-    lv_obj_set_style_text_font(label, &lv_font_montserrat_48, 0);
-    lv_obj_set_style_text_color(label, lv_color_black(), LV_PART_MAIN);
-    lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
+    UITheme::init();
 
-    lv_obj_set_style_bg_color(lv_screen_active(), lv_color_white(), LV_PART_MAIN);
-    lv_obj_set_style_bg_opa(lv_screen_active(), LV_OPA_COVER, LV_PART_MAIN);
+    lv_obj_t* screen = lv_obj_create(nullptr);
+    lv_obj_add_style(screen, UITheme::screen(), LV_PART_MAIN);
+
+
+    lv_obj_t* label = lv_label_create(screen);
+    lv_label_set_text(label, "Hello world");
+    lv_obj_add_style(label, UITheme::titleLabel(), LV_PART_MAIN);
+    lv_obj_center(label);
+    
+
+    lv_screen_load(screen);
 
     lv_timer_handler();
     LVGL_EPAPER_ADAPTER::commitUI(disp);
-
-    delay(5000);
-    
-    LVGL_EPAPER_ADAPTER::invertDisplay();
 
     delay(5000);
 

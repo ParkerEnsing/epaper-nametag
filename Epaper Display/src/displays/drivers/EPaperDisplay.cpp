@@ -281,10 +281,8 @@ void EPaperDisplay::fastInvert(const unsigned char* data) {
     unsigned char tempOriginal;
     unsigned int tempCol = 0;
     unsigned int tempLine = 0;
-
     _setRAMWindowPri();
     _setRAMCursorPri();
-
     _busyHold();
     _writeCommand(0x24); // Command: Write RAM (Black White) / RAM 0x24 00100100
     for (i = 0; i < TOTAL_SCREEN_BYTES; i++) {
