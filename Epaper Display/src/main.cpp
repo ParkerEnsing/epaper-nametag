@@ -2,8 +2,8 @@
 //#include <lvgl.h>
 //#include "assets/test_images/pic_home.h"
 #include "EPaperDisplay.h"
-#include "UIRuntime.h"
-#include "UITheme.h"
+#include "ui/UIRuntime.h"
+#include "ui/UITheme.h"
 
 
 EPaperDisplay EPD;
