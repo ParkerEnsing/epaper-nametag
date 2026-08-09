@@ -4,7 +4,7 @@
 #include "assets/test_images/pic_home.h"
 #include "EPaperDisplay.h"
 #include "LVGLEPaperAdapter.h"
-#include "ui/UITheme.h"
+#include "UITheme.h"
 
 const int LV_BUFFER_DIVISIONS = 1;
 
