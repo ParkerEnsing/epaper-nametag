@@ -4,6 +4,7 @@
 #include "EPaperDisplay.h"
 #include "ui/UIRuntime.h"
 #include "ui/UITheme.h"
+#include "ui/screens/BootScreen.h"
 
 
 EPaperDisplay EPD;
@@ -16,20 +17,12 @@ void setup() {
 
     Serial.print("PSRAM SIZE: ");
     Serial.print(ESP.getPsramSize());
-    Serial.println("Bytes");
+    Serial.println(" Bytes");
 
     EPD.begin();
     UIRuntime::begin(&EPD);
 
-    lv_obj_t* screen = lv_obj_create(nullptr);
-    lv_obj_add_style(screen, UITheme::screen(), LV_PART_MAIN);
-
-    lv_obj_t* label = lv_label_create(screen);
-    lv_label_set_text(label, "Hello world");
-    lv_obj_add_style(label, UITheme::titleLabel(), LV_PART_MAIN);
-    lv_obj_center(label);
-    
-    lv_screen_load(screen);
+    lv_screen_load(BootScreen::create());
 
     UIRuntime::commit();
     
