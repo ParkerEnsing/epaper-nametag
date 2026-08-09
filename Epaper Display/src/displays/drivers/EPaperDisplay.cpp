@@ -38,9 +38,7 @@ void EPaperDisplay::begin() {
 
     initializeGPIO();
 
-    initializeFastMode();
-    clear();
-    update();
+    clearUpdate();
 }
 
 
@@ -237,14 +235,6 @@ void EPaperDisplay::clearUpdate() {
 }
 
 
-/*
-How to display:
-  1) EPD_FastMode1Init();
-  2) Draw content to buffer
-  3) EPD_Display(buffer);
-  4) EPD_FastUpdate();
-  5) EPD_DeepSleep(); (optional; used to save power)
-*/
 void EPaperDisplay::render(const uint8_t* imageAddress) {
     initializeFastMode();
     display(imageAddress);

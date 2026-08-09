@@ -73,12 +73,16 @@ EPaperDisplay* LVGL_EPAPER_ADAPTER::_display = nullptr;
 
 uint8_t LVGL_EPAPER_ADAPTER::_framebuffer[EPaperDisplay::Y * EPaperDisplay::SOURCE_BYTES * 2] = {0xFF};
 
+bool LVGL_EPAPER_ADAPTER::_isFramebufferDirty = false;
+
+
 void LVGL_EPAPER_ADAPTER::init(EPaperDisplay* display) {
     _display = display;
 
     // initialize framebuffer to white
     memset(_framebuffer, 0xFF, sizeof(_framebuffer));
 }
+
 
 void LVGL_EPAPER_ADAPTER::flush_cb(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map) {
     /*
@@ -98,12 +102,44 @@ void LVGL_EPAPER_ADAPTER::flush_cb(lv_display_t* disp, const lv_area_t* area, ui
         const uint8_t* srcRow = px_map + row * srcBytesPerRow;
         copy_lvgl_row_to_epd_row(dstRow, srcRow, area->x1, width);
     }
+    _isFramebufferDirty = true;
     lv_display_flush_ready(disp);
 }
+
+
+void LVGL_EPAPER_ADAPTER::rounder_cb(lv_event_t* e) {
+    lv_area_t* area = lv_event_get_invalidated_area(e);
+    area->x1 &= ~0x7;
+    area->x2 |=  0x7;
+}
+
 
 void LVGL_EPAPER_ADAPTER::refreshDisplay() {
     if (_display == nullptr) {
         return;
     }
+    if (!_isFramebufferDirty) {
+        return;
+    }
     _display->render(_framebuffer);
+    _isFramebufferDirty = false;
+}
+
+
+void LVGL_EPAPER_ADAPTER::invertDisplay() {
+    if (_display == nullptr) {
+        return;
+    }
+    _display->fastInvert(_framebuffer);
+}
+
+
+void LVGL_EPAPER_ADAPTER::commitUI(lv_display_t* disp) {
+    lv_refr_now(disp);
+    refreshDisplay();
+}
+
+
+bool LVGL_EPAPER_ADAPTER::isDirty() {
+    return _isFramebufferDirty;
 }
