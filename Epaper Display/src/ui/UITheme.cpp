@@ -32,7 +32,7 @@ void UITheme::init() {
     // Title label style
     lv_style_init(&styleTitleLabel);
     lv_style_set_text_color(&styleTitleLabel, lv_color_black());
-    lv_style_set_text_font(&styleTitleLabel, LV_FONT_DEFAULT);
+    lv_style_set_text_font(&styleTitleLabel, &lv_font_montserrat_48);
     lv_style_set_pad_all(&styleTitleLabel, 0);
 
     // Body label style
