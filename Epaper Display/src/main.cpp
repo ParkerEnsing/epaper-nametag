@@ -5,6 +5,7 @@
 #include "ui/UIRuntime.h"
 #include "ui/UITheme.h"
 #include "ui/screens/OrgSplashScreen.h"
+#include "ui/screens/ProductSplashScreen.h"
 #include "ui/screens/BootScreen.h"
 
 
@@ -26,10 +27,15 @@ void setup() {
     lv_screen_load(OrgSplashScreen::create());
     UIRuntime::commit();
     delay(1000);
+
+    lv_screen_load(ProductSplashScreen::create());
+    UIRuntime::commit();
+    delay(1000);
+
     lv_screen_load(BootScreen::create());
     UIRuntime::commit();
-    
     delay(5000);
+
     EPD.end();
 }
 
