@@ -1,7 +1,7 @@
 #include <Arduino.h>
 //#include <lvgl.h>
 //#include "assets/test_images/pic_home.h"
-#include "EPaperDisplay.h"
+#include "displays/drivers/EPaperDisplay.h"
 #include "ui/UIRuntime.h"
 #include "ui/UITheme.h"
 #include "ui/screens/OrgSplashScreen.h"

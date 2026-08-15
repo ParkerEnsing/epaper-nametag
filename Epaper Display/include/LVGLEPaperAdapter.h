@@ -2,7 +2,7 @@
 #define LVGLEPAPERADAPTER_H
 
 
-#include "EPaperDisplay.h"
+#include "displays/drivers/EPaperDisplay.h"
 #include <lvgl.h>
 
 

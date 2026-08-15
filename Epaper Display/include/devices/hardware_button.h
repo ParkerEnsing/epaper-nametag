@@ -1,7 +1,7 @@
 #ifndef HARDWARE_BUTTON_H
 #define HARDWARE_BUTTON_H
 
-#include "peripheral_device.h"
+#include "devices/peripheral_device.h"
 
 class HardwareButton : public PeripheralDevice {
     public:

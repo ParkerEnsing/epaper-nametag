@@ -2,7 +2,7 @@
 #define UI_RUNTIME_H
 
 #include <lvgl.h>
-#include "EPaperDisplay.h"
+#include "displays/drivers/EPaperDisplay.h"
 
 
 namespace UIRuntime {

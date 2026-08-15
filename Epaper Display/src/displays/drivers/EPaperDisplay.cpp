@@ -1,5 +1,5 @@
 #include "DevBoardIO.h"
-#include "EPaperDisplay.h"
+#include "displays/drivers/EPaperDisplay.h"
 #include <SPI.h>
 
 
