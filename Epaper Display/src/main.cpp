@@ -7,6 +7,7 @@
 #include "ui/screens/OrgSplashScreen.h"
 #include "ui/screens/ProductSplashScreen.h"
 #include "ui/screens/BootScreen.h"
+#include "ui/screens/NametagScreen.h"
 
 
 EPaperDisplay EPD;
@@ -34,6 +35,9 @@ void setup() {
 
     lv_screen_load(BootScreen::create());
     UIRuntime::commit();
+
+    lv_screen_load(NametagScreen::create());
+    UIRuntime::commit();
     delay(5000);
 
     EPD.end();
@@ -41,6 +45,6 @@ void setup() {
 
 
 void loop() {
-    UIRuntime::service();
-    delay(5);
+    // UIRuntime::service();
+    // delay(5);
 }

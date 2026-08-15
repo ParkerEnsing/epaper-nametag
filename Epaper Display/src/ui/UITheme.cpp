@@ -38,7 +38,7 @@ void UITheme::init() {
     // Body label style
     lv_style_init(&styleBodyLabel);
     lv_style_set_text_color(&styleBodyLabel, lv_color_black());
-    lv_style_set_text_font(&styleBodyLabel, LV_FONT_DEFAULT);
+    lv_style_set_text_font(&styleBodyLabel, &lv_font_montserrat_32);
     lv_style_set_pad_all(&styleBodyLabel, 0);
 
     // Panel/card style
