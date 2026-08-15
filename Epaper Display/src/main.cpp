@@ -2,12 +2,12 @@
 //#include <lvgl.h>
 //#include "assets/test_images/pic_home.h"
 #include "displays/drivers/EPaperDisplay.h"
-#include "ui/UIRuntime.h"
-#include "ui/UITheme.h"
-#include "ui/screens/OrgSplashScreen.h"
-#include "ui/screens/ProductSplashScreen.h"
-#include "ui/screens/BootScreen.h"
-#include "ui/screens/NametagScreen.h"
+#include "displays/ui/UIRuntime.h"
+#include "displays/ui/UITheme.h"
+#include "displays/ui/screens/OrgSplashScreen.h"
+#include "displays/ui/screens/ProductSplashScreen.h"
+#include "displays/ui/screens/BootScreen.h"
+#include "displays/ui/screens/NametagScreen.h"
 
 
 EPaperDisplay EPD;

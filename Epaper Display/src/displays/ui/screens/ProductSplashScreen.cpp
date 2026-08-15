@@ -1,5 +1,5 @@
-#include "ui/screens/ProductSplashScreen.h"
-#include "ui/UITheme.h"
+#include "displays/ui/screens/ProductSplashScreen.h"
+#include "displays/ui/UITheme.h"
 
 
 lv_obj_t* ProductSplashScreen::create() {

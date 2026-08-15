@@ -1,6 +1,6 @@
-#include "ui/UIRuntime.h"
+#include "displays/ui/UIRuntime.h"
 #include "LVGLEPaperAdapter.h"
-#include "ui/UITheme.h"
+#include "displays/ui/UITheme.h"
 #include <Arduino.h>
 #include <lvgl.h>
 

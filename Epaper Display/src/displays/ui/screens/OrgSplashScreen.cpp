@@ -1,5 +1,5 @@
-#include "ui/screens/OrgSplashScreen.h"
-#include "ui/UITheme.h"
+#include "displays/ui/screens/OrgSplashScreen.h"
+#include "displays/ui/UITheme.h"
 
 
 lv_obj_t* OrgSplashScreen::create() {

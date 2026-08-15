@@ -1,5 +1,5 @@
-#include "ui/screens/NametagScreen.h"
-#include "ui/UITheme.h"
+#include "displays/ui/screens/NametagScreen.h"
+#include "displays/ui/UITheme.h"
 
 
 lv_obj_t* NametagScreen::create() {
