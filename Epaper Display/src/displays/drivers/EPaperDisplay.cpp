@@ -229,14 +229,16 @@ void EPaperDisplay::fastUpdate() {
 
 
 void EPaperDisplay::clearUpdate() {
-    initializeFastMode();
+    initialize();
+    // initializeFastMode();
     clear();
     update();
 }
 
 
 void EPaperDisplay::render(const uint8_t* imageAddress) {
-    initializeFastMode();
+    initialize();
+    //initializeFastMode();
     display(imageAddress);
     update();
 }
@@ -262,7 +264,8 @@ void EPaperDisplay::fastRenderAndSleep(const uint8_t* imageAddress) {
 
 
 void EPaperDisplay::partialRender(const uint8_t* imageAddress) {
-    initializeFastMode();
+    initialize();
+    //initializeFastMode();
     display(imageAddress);
     partialUpdate();
 }

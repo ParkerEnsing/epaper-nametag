@@ -121,7 +121,7 @@ void LVGL_EPAPER_ADAPTER::refreshDisplay() {
     if (!_isFramebufferDirty) {
         return;
     }
-    _display->render(_framebuffer);
+    _display->renderAndSleep(_framebuffer);
     _isFramebufferDirty = false;
 }
 

@@ -23,8 +23,10 @@ void UITheme::init() {
     // Screen style
     lv_style_init(&styleScreen);
     lv_style_set_bg_color(&styleScreen, lv_color_white());
+    // lv_style_set_bg_color(&styleScreen, lv_color_black());
     lv_style_set_bg_opa(&styleScreen, LV_OPA_COVER);
     lv_style_set_text_color(&styleScreen, lv_color_black());
+    // lv_style_set_text_color(&styleScreen, lv_color_white());
     lv_style_set_pad_all(&styleScreen, 0);
     lv_style_set_border_width(&styleScreen, 0);
     lv_style_set_radius(&styleScreen, 0);
@@ -32,12 +34,14 @@ void UITheme::init() {
     // Title label style
     lv_style_init(&styleTitleLabel);
     lv_style_set_text_color(&styleTitleLabel, lv_color_black());
+    // lv_style_set_text_color(&styleTitleLabel, lv_color_white());
     lv_style_set_text_font(&styleTitleLabel, &lv_font_montserrat_48);
     lv_style_set_pad_all(&styleTitleLabel, 0);
 
     // Body label style
     lv_style_init(&styleBodyLabel);
     lv_style_set_text_color(&styleBodyLabel, lv_color_black());
+    // lv_style_set_text_color(&styleBodyLabel, lv_color_white());
     lv_style_set_text_font(&styleBodyLabel, &lv_font_montserrat_20);
     lv_style_set_pad_all(&styleBodyLabel, 0);
 
