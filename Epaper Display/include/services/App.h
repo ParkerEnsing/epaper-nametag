@@ -10,7 +10,7 @@ struct InputEvent;
 
 class App {
     public:
-        // Ensure one isntance of each app by preventing copying
+        // Ensure one instance of each app by preventing copying
         App(const App &) = delete;
         App &operator = (const App &) = delete;
 
@@ -31,7 +31,7 @@ class App {
             (void)context;
             (void)event;
         }
-        
+
         virtual lv_obj_t* screen() const = 0;
     protected:
         App() = default;
