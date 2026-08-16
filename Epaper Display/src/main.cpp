@@ -5,24 +5,32 @@
 #include "displays/drivers/EPaperDisplay.h"
 #include "displays/ui/UIRuntime.h"
 
+#include "services/App.h"
 #include "services/AppContext.h"
-#include "services/apps/DiagnosticApp.h"
-#include "services/apps/UptimeApp.h"
+#include "services/AppRegistry.h"
 
 
 EPaperDisplay EPD;
 
 static AppContext appContext;
-// static UptimeApp uptimeApp;
-static DiagnosticApp diagnosticApp;
+static App* activeApp = nullptr;
+static lv_obj_t* loadedScreen = nullptr;
 
-// static App* activeApp = &uptimeApp;
-static App* activeApp = &diagnosticApp;
+static constexpr const char* STARTUP_APP_ID = "uptime";
+// static constexpr const char* STARTUP_APP_ID = "diagnostic";
 
 
 static void processAppContext() {
+    if (activeApp == nullptr) {
+        return;
+    }
+
     if (appContext.isCommitRequested()) {
-        lv_screen_load(activeApp->screen());
+        lv_obj_t* appScreen = activeApp->screen();
+        if (appScreen != nullptr && loadedScreen != appScreen) {
+            lv_screen_load(appScreen);
+            loadedScreen = appScreen;
+        }
         UIRuntime::commit();
         appContext.clearCommitRequest();
     }
@@ -30,11 +38,26 @@ static void processAppContext() {
 
 
 void setup() {
+    Serial.begin(115200);
+
     EPD.begin();
     UIRuntime::begin(&EPD);
+    AppRegistry::begin();
+
+    activeApp = AppRegistry::getById(STARTUP_APP_ID);
+
+    if (activeApp == nullptr) {
+        Serial.println("Failed to find the startup app.");
+        return;
+    }
+
+    Serial.print("Launching app: ");
+    Serial.println(activeApp->name());
 
     activeApp->onEnter(appContext);
     processAppContext();
+
+    Serial.println("Setup complete.");
 }
 
 
@@ -42,8 +65,10 @@ void loop() {
     const uint32_t nowMs = millis();
     UIRuntime::service();
 
-    activeApp->onUpdate(appContext, nowMs);
-    processAppContext();
-
+    if (activeApp != nullptr) {
+        activeApp->onUpdate(appContext, nowMs);
+        processAppContext();
+    }
+    
     delay(5);
 }

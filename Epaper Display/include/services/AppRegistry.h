@@ -7,8 +7,9 @@
 namespace AppRegistry {
     void begin();
     App* getById(const char* id);
-    App* getByIndex(uint8_t index);
-    uint8_t count();
+    App* getByIndex(size_t index);
+    size_t count();
+    int indexOf(const char* appId);
 }
 
 
