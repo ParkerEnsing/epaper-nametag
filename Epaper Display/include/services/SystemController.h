@@ -9,6 +9,7 @@ class App;
 struct InputEvent;
 
 enum class SystemMode {
+    BootSequence,
     Home,
     AppRunning,
     Launcher,

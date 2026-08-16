@@ -19,6 +19,29 @@ namespace {
 
     const char* configuredHomeAppID = DEFAULT_HOME_APP_ID;
 
+
+    struct SequenceStep {
+        const char* appId;
+        uint32_t durationMs;
+    };
+
+    static constexpr SequenceStep BOOT_SEQUENCE[] = {
+        {"diagnostic", 3000},
+        {"uptime", 3000},
+    };
+
+    static constexpr size_t BOOT_SEQUENCE_COUNT = sizeof(BOOT_SEQUENCE) / sizeof(BOOT_SEQUENCE[0]);
+    size_t bootSequenceIndex = 0;
+    uint32_t bootStepStartMs = 0;
+
+    bool startBootSequence(uint32_t nowMs);
+    bool startBootSequenceStep(size_t index, uint32_t nowMs);
+    void updateBootSequence(uint32_t nowMs);
+
+
+    bool activateApp(const char* appId, SystemMode nextMode); // redundant forward declaration. Useful if sequence functions need to move in the future.
+
+
     bool commitRequested = false;
 
 
@@ -145,6 +168,59 @@ namespace {
 
         consumeCommitRequest(); // why isn't this in the if statement?
     }
+
+
+    bool startBootSequence(uint32_t nowMs) {
+        bootSequenceIndex = 0;
+        bootStepStartMs = nowMs;
+
+        if (BOOT_SEQUENCE_COUNT == 0) {
+            return SystemController::goHome();
+        }
+        return startBootSequenceStep(bootSequenceIndex, nowMs);
+    }
+
+
+    bool startBootSequenceStep(size_t index, uint32_t nowMs) {
+        if (index >= BOOT_SEQUENCE_COUNT) {
+            return SystemController::goHome();
+        }
+
+        bootSequenceIndex = index;
+        bootStepStartMs = nowMs;
+
+        return activateApp(
+            BOOT_SEQUENCE[bootSequenceIndex].appId,
+            SystemMode::BootSequence
+        );
+    }
+
+
+    void updateBootSequence(uint32_t nowMs) {
+        if (currentMode != SystemMode::BootSequence) {
+            return;
+        }
+
+        if (bootSequenceIndex >= BOOT_SEQUENCE_COUNT) {
+            SystemController::goHome();
+            return;
+        }
+
+        const SequenceStep &step = BOOT_SEQUENCE[bootSequenceIndex];
+
+        if (nowMs - bootStepStartMs < step.durationMs) {
+            return;
+        }
+
+        const size_t nextIndex = bootSequenceIndex + 1;
+
+        if (nextIndex >= BOOT_SEQUENCE_COUNT) {
+            SystemController::goHome();
+            return;
+        }
+
+        startBootSequenceStep(nextIndex, nowMs);
+    }
 }
 
 
@@ -156,20 +232,22 @@ void SystemController::begin() {
     currentMode = SystemMode::Home;
     commitRequested = false;
 
+    bootSequenceIndex = 0;
+    bootStepStartMs = 0;
+
     appContext.clear();
 
-    goHome();
+    startBootSequence(millis());
 }
 
 
 void SystemController::update(uint32_t nowMs) {
-    if (currentApp == nullptr) {
-        return;
+    if (currentApp != nullptr) {
+        currentApp->onUpdate(appContext, nowMs);
+        processAppContext();
     }
 
-    currentApp->onUpdate(appContext, nowMs);
-
-    processAppContext();
+    updateBootSequence(nowMs);
 }
 
 
