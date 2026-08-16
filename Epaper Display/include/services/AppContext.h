@@ -14,7 +14,7 @@ enum class AppCommandType {
 
 struct AppCommand {
     AppCommandType type = AppCommandType::None;
-    const char* appID = nullptr;
+    const char* appId = nullptr;
 };
 
 class AppContext {

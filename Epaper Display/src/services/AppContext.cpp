@@ -59,11 +59,11 @@ AppCommand AppContext::command() const {
 
 void AppContext::clearCommand() {
     _command.type = AppCommandType::None;
-    _command.appID = nullptr;
+    _command.appId = nullptr;
 }
 
 
-void AppContext::setCommand(AppCommandType type, const char* appID) {
+void AppContext::setCommand(AppCommandType type, const char* appId) {
     _command.type = type;
-    _command.appID = appID;
+    _command.appId = appId;
 }
