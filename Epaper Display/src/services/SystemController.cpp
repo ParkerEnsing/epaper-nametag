@@ -4,12 +4,14 @@
 #include "services/AppContext.h"
 #include "services/AppRegistry.h"
 
+#include "input/InputEvent.h"
+
 #include <Arduino.h>
 #include <lvgl.h>
 
 
 namespace {
-    static constexpr const char* DEFAULT_HOME_APP_ID = "launcher";
+    static constexpr const char* DEFAULT_HOME_APP_ID = "diagnostic";
 
     AppContext appContext;
 
@@ -252,6 +254,24 @@ void SystemController::update(uint32_t nowMs) {
 
 
 void SystemController::handleInput(const InputEvent &event) {
+    //Global/system-level inputs are handled before the active app sees the event.
+    switch (event.action) {
+        case InputAction::OpenLauncher:
+            openLauncher();
+            return;
+        case InputAction::Home:
+            goHome();
+            return;
+        case InputAction::StartSlideshow:
+            startSlideshow();
+            return;
+        case InputAction::StopSlideshow:
+            stopSlideshow();
+            return;
+        default:
+            break;
+    }
+
     if (currentApp == nullptr) {
         return;
     }

@@ -12,11 +12,15 @@ class LauncherApp : public App {
         const char* name() const override;
 
         void onEnter(AppContext &context) override;
+        void onInput(AppContext &context, const InputEvent &event) override;
 
         lv_obj_t* screen() const override; 
     private:
         void createScreen();
         void updateListText();
+
+        void moveSelection(uint32_t delta);
+        void launchSelected(AppContext &context);
 
         static constexpr size_t TEXT_BUFFER_SIZE = 512;
 

@@ -4,6 +4,8 @@
 #include "services/AppRegistry.h"
 #include "displays/ui/UITheme.h"
 
+#include "input/InputEvent.h"
+
 #include <lvgl.h>
 #include <stdio.h>
 #include <string.h>
@@ -77,6 +79,35 @@ void LauncherApp::onEnter(AppContext &context) {
 }
 
 
+void LauncherApp::onInput(AppContext &context, const InputEvent &event) {
+    switch (event.action) {
+    case InputAction::Up:
+        moveSelection(-1);
+        updateListText();
+        context.requestCommit();
+        break;
+    case InputAction::Down:
+        moveSelection(1);
+        updateListText();
+        context.requestCommit();
+        break;
+    case InputAction::Select:
+        launchSelected(context);
+        break;
+    case InputAction::Back:
+        //break;
+    case InputAction::Home:
+        context.requestGoHome();
+        break;
+    case InputAction::StartSlideshow:
+        context.requestStartSlideshow();
+        break;
+    default:
+        break;
+    }
+}
+
+
 lv_obj_t* LauncherApp::screen() const {
     return _screen;
 }
@@ -122,7 +153,7 @@ void LauncherApp::updateListText() {
     for (size_t i = 0; i < appCount; i++) {
         App* app = AppRegistry::getByIndex(i);
 
-        const char* marker = (i == _selectedIndex) ? "> " : " ";
+        const char* marker = (i == _selectedIndex) ? "> " : "  ";
 
         const char* appName = (app != nullptr) ? app->name() : "(null)";
 
@@ -140,4 +171,63 @@ void LauncherApp::updateListText() {
     }
 
     lv_label_set_text(_listLabel, _textBuffer);
+}
+
+
+void LauncherApp::moveSelection(uint32_t delta) {
+    const size_t appCount = AppRegistry::count();
+
+    if (appCount == 0) {
+        _selectedIndex = 0;
+        return;
+    }
+
+    int32_t nextIndex = static_cast<int32_t>(_selectedIndex) + delta;
+
+    const int32_t count = static_cast<int32_t>(appCount);
+
+    while (nextIndex < 0) {
+        nextIndex += count;
+    }
+
+    while (nextIndex >= count) {
+        nextIndex -= count;
+    }
+
+    _selectedIndex = static_cast<size_t>(nextIndex);
+}
+
+
+void LauncherApp::launchSelected(AppContext &context) {
+    const size_t appCount = AppRegistry::count();
+
+    if (appCount == 0) {
+        return;
+    }
+
+    if (_selectedIndex >= appCount) {
+        _selectedIndex = appCount - 1;
+    }
+
+    App* selectedApp = AppRegistry::getByIndex(_selectedIndex);
+
+    if (selectedApp == nullptr) {
+        return;
+    }
+
+    /*
+        The launcher currently appears in the registry and therefore
+        appears in its own list. Selecting it does nothing for now.
+
+        Later, metadata can be added, such as:
+            showInLauncer()
+            isSystemApp()
+            icon()
+    */
+    if (selectedApp == this) {
+        context.requestCommit();
+        return;
+    }
+
+    context.requestLaunchApp(selectedApp->id());
 }
