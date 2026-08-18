@@ -153,7 +153,7 @@ void LauncherApp::updateListText() {
     for (size_t i = 0; i < appCount; i++) {
         App* app = AppRegistry::getByIndex(i);
 
-        const char* marker = (i == _selectedIndex) ? "> " : "  ";
+        const char* marker = (i == _selectedIndex) ? "> " : "   ";
 
         const char* appName = (app != nullptr) ? app->name() : "(null)";
 
