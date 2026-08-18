@@ -1,5 +1,6 @@
 #include "services/AppRegistry.h"
 
+#include "services/apps/LauncherApp.h"
 #include "services/apps/DiagnosticApp.h"
 #include "services/apps/UptimeApp.h"
 
@@ -7,10 +8,12 @@
 
 
 namespace {
+    LauncherApp launcherApp;
     DiagnosticApp diagnosticApp;
     UptimeApp uptimeApp;
 
     App* const registeredApps[] = {
+        &launcherApp,
         &diagnosticApp,
         &uptimeApp,
     };

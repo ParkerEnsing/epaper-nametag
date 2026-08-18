@@ -9,7 +9,7 @@
 
 
 namespace {
-    static constexpr const char* DEFAULT_HOME_APP_ID = "diagnostic";
+    static constexpr const char* DEFAULT_HOME_APP_ID = "launcher";
 
     AppContext appContext;
 
@@ -274,7 +274,7 @@ bool SystemController::goHome() {
 
 // TODO: replace with launchApp("launcher") after launcher app exists
 void SystemController::openLauncher() {
-    Serial.println("SystemController:launcher not implemented yet.");
+    activateApp("launcher", SystemMode::Launcher);
 }
 
 
