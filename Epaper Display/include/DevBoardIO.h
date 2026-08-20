@@ -1,5 +1,5 @@
-#ifndef _DEVBOARDIO_H_
-#define _DEVBOARDIO_H_
+#ifndef DEVBOARD_IO_H
+#define DEVBOARD_IO_H
 
 // #define GND 1 // GND, Chip 1
 // #define V3_3 2 // Power Supply, Chip 2
