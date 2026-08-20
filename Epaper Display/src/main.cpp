@@ -1,10 +1,15 @@
 #include <Arduino.h>
 
-// #include <lvgl.h>
 // #include "assets/test_images/pic_home.h"
+
+#include "DevBoardIO.h"
 #include "displays/drivers/EPaperDisplay.h"
+// #include <lvgl.h>
 #include "displays/ui/UIRuntime.h"
+
+#include "input/InputService.h"
 #include "input/InputEvent.h"
+
 #include "services/SystemController.h"
 
 
@@ -69,9 +74,10 @@ void setup() {
 
     EPD.begin();
     UIRuntime::begin(&EPD);
+    InputService::begin();
     SystemController::begin();
 
-    if (SystemController::shouldCommit) {
+    if (SystemController::shouldCommit()) {
         UIRuntime::commit();
         SystemController::clearCommitRequest();
     }
@@ -84,7 +90,14 @@ void loop() {
     const uint32_t nowMs = millis();
     UIRuntime::service();
 
-    processSerialDebugInput();
+    InputService::update(nowMs);
+    InputEvent event;
+
+    while (InputService::read(event)) {
+        SystemController::handleInput(event);
+    }
+
+    //processSerialDebugInput();
 
     SystemController::update(nowMs);
 

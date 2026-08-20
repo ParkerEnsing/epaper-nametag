@@ -11,7 +11,7 @@
 
 
 namespace {
-    static constexpr const char* DEFAULT_HOME_APP_ID = "diagnostic";
+    static constexpr const char* DEFAULT_HOME_APP_ID = "launcher";
 
     AppContext appContext;
 
