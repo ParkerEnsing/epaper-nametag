@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+
+  "system": {
+    "homeApp": "uptime"
+  },
+
+  "bootSequence": [
+    {
+      "app": "diagnostic",
+      "durationMs": 3000
+    },
+    {
+      "app": "uptime",
+      "durationMs": 3000
+    }
+  ],
+
+  "slideshow": {
+    "intervalMs": 30000,
+    "apps": [
+      "diagnostic",
+      "uptime"
+    ]
+  },
+
+  "launcher": {
+    "showSystemApps": true
+  }
+}
