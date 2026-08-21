@@ -29,6 +29,7 @@ namespace SystemController {
     bool goHome();
 
     void openLauncher();
+
     void startSlideshow();
     void stopSlideshow();
 

@@ -65,7 +65,7 @@ void LauncherApp::onEnter(AppContext &context) {
         createScreen();
     }
     
-    const size_t appCount = AppRegistry::count();
+    const size_t appCount = AppRegistry::count() + 1; // adds 1 for slideshow
 
     if (appCount == 0) {
         _selectedIndex = 0;
@@ -170,21 +170,34 @@ void LauncherApp::updateListText() {
         );
     }
 
+    const size_t slideshowIndex = appCount;
+    const char* marker = (_selectedIndex == slideshowIndex) ? "> " : "   ";
+    appendText(
+        _textBuffer,
+        sizeof(_textBuffer),
+        offset,
+        "%s%s [%s]\n",
+        marker,
+        "Start slideshow",
+        "system"
+    );
+
     lv_label_set_text(_listLabel, _textBuffer);
 }
 
 
 void LauncherApp::moveSelection(uint32_t delta) {
     const size_t appCount = AppRegistry::count();
+    const size_t itemCount = appCount + 1; // includes entry for slideshow
 
-    if (appCount == 0) {
+    if (itemCount == 0) {
         _selectedIndex = 0;
         return;
     }
 
     int32_t nextIndex = static_cast<int32_t>(_selectedIndex) + delta;
 
-    const int32_t count = static_cast<int32_t>(appCount);
+    const int32_t count = static_cast<int32_t>(itemCount);
 
     while (nextIndex < 0) {
         nextIndex += count;
@@ -201,12 +214,18 @@ void LauncherApp::moveSelection(uint32_t delta) {
 void LauncherApp::launchSelected(AppContext &context) {
     const size_t appCount = AppRegistry::count();
 
-    if (appCount == 0) {
+    if (_selectedIndex == appCount) {
+        context.requestStartSlideshow();
         return;
     }
 
-    if (_selectedIndex >= appCount) {
-        _selectedIndex = appCount - 1;
+    // if (appCount == 0) {
+    //     return;
+    // }
+
+    if (_selectedIndex > appCount) {
+        _selectedIndex = 0;
+        return;
     }
 
     App* selectedApp = AppRegistry::getByIndex(_selectedIndex);
@@ -220,7 +239,7 @@ void LauncherApp::launchSelected(AppContext &context) {
         appears in its own list. Selecting it does nothing for now.
 
         Later, metadata can be added, such as:
-            showInLauncer()
+            showInLauncher()
             isSystemApp()
             icon()
     */

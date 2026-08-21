@@ -41,6 +41,18 @@ namespace {
     void updateBootSequence(uint32_t nowMs);
 
 
+    static const char* SLIDESHOW_SEQUENCE_IDS[] = {
+        "diagnostic",
+        "uptime",
+        "launcher",
+    };
+
+    static const uint32_t SLIDESHOW_STEP_DURATION = 5000; // milliseconds
+    static constexpr size_t SLIDESHOW_SEQUENCE_COUNT = sizeof(SLIDESHOW_SEQUENCE_IDS) / sizeof(SLIDESHOW_SEQUENCE_IDS[0]);
+    size_t slideshowSequenceIndex = 0;
+    uint32_t slideshowStepStartMs = 0;
+
+
     bool activateApp(const char* appId, SystemMode nextMode); // redundant forward declaration. Useful if sequence functions need to move in the future.
 
 
@@ -191,10 +203,7 @@ namespace {
         bootSequenceIndex = index;
         bootStepStartMs = nowMs;
 
-        return activateApp(
-            BOOT_SEQUENCE[bootSequenceIndex].appId,
-            SystemMode::BootSequence
-        );
+        return activateApp(BOOT_SEQUENCE[bootSequenceIndex].appId, SystemMode::BootSequence);
     }
 
 
@@ -223,6 +232,74 @@ namespace {
 
         startBootSequenceStep(nextIndex, nowMs);
     }
+
+
+    bool showSlideshowStep(size_t index, uint32_t nowMs) {
+        if (SLIDESHOW_SEQUENCE_COUNT == 0) {
+            return false;
+        }
+
+        slideshowSequenceIndex = index % SLIDESHOW_SEQUENCE_COUNT;
+        slideshowStepStartMs = nowMs;
+
+        return activateApp(SLIDESHOW_SEQUENCE_IDS[slideshowSequenceIndex], SystemMode::Slideshow);
+    }
+
+
+    bool nextSlideshowStep(uint32_t nowMs) {
+        if (SLIDESHOW_SEQUENCE_COUNT == 0) {
+            return false;
+        }
+
+        const size_t nextIndex = (slideshowSequenceIndex + 1) % SLIDESHOW_SEQUENCE_COUNT;
+        return showSlideshowStep(nextIndex, nowMs);
+    }
+
+
+    bool previousSlideshowStep(uint32_t nowMs) {
+        if (SLIDESHOW_SEQUENCE_COUNT == 0) {
+            return false;
+        }
+
+        const size_t previousIndex = (slideshowSequenceIndex == 0) ? (SLIDESHOW_SEQUENCE_COUNT - 1) : (slideshowSequenceIndex - 1);
+        return showSlideshowStep(previousIndex, nowMs);
+    }
+
+
+    void updateSlideshow(uint32_t nowMs) {
+        if (currentMode != SystemMode::Slideshow) {
+            return;
+        }
+
+        if (nowMs - slideshowStepStartMs < SLIDESHOW_STEP_DURATION) {
+            return;
+        }
+
+        nextSlideshowStep(nowMs);
+    }
+
+
+    bool handleSlideshowInput(const InputEvent &event) {
+        switch (event.action) {
+            case InputAction::Up:
+            case InputAction::Left:
+                previousSlideshowStep(millis());
+                return true;
+            case InputAction::Down:
+            case InputAction::Right:
+                nextSlideshowStep(millis());
+                return true;
+            case InputAction::Back:
+                SystemController::goHome();
+                return true;
+            case InputAction::Select:
+                // Stop cycling and keep the current app active
+                currentMode = SystemMode::AppRunning;
+                return true;
+            default:
+                return false;
+        }
+    }
 }
 
 
@@ -250,11 +327,12 @@ void SystemController::update(uint32_t nowMs) {
     }
 
     updateBootSequence(nowMs);
+    updateSlideshow(nowMs);
 }
 
 
 void SystemController::handleInput(const InputEvent &event) {
-    //Global/system-level inputs are handled before the active app sees the event.
+    // Global/system-level inputs are handled before the active app sees the event.
     switch (event.action) {
         case InputAction::OpenLauncher:
             openLauncher();
@@ -268,6 +346,15 @@ void SystemController::handleInput(const InputEvent &event) {
         case InputAction::StopSlideshow:
             stopSlideshow();
             return;
+        default:
+            break;
+    }
+
+    switch (currentMode) {
+        case SystemMode::Slideshow:
+            if (handleSlideshowInput(event)) {
+                return;
+            }
         default:
             break;
     }
@@ -292,21 +379,18 @@ bool SystemController::goHome() {
 }
 
 
-// TODO: replace with launchApp("launcher") after launcher app exists
 void SystemController::openLauncher() {
     activateApp("launcher", SystemMode::Launcher);
 }
 
 
-// TODO: implement slideshow mode after the basic app launch path is stable.
 void SystemController::startSlideshow() {
-    Serial.println("SystemController: slideshow not implemented yet.");
+    showSlideshowStep(0, millis());
 }
 
 
-// TODO: implement slideshow mode after the basic app launch path is stable.
 void SystemController::stopSlideshow() {
-    Serial.println("SystemController: stop slideshow not implemented yet.");
+    goHome();
 }
 
 
