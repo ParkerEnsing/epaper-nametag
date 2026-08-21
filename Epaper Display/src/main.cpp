@@ -10,6 +10,7 @@
 #include "input/InputService.h"
 #include "input/InputEvent.h"
 
+#include "config/ConfigManager.h"
 #include "services/SystemController.h"
 
 
@@ -75,6 +76,7 @@ void setup() {
     EPD.begin();
     UIRuntime::begin(&EPD);
     InputService::begin();
+    ConfigManager::begin();
     SystemController::begin();
 
     if (SystemController::shouldCommit()) {
