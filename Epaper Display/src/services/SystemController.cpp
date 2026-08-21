@@ -1,5 +1,7 @@
 #include "services/SystemController.h"
 
+#include "config/DeviceConfig.h"
+
 #include "services/App.h"
 #include "services/AppContext.h"
 #include "services/AppRegistry.h"
