@@ -73,11 +73,11 @@ static void processSerialDebugInput() {
 void setup() {
     Serial.begin(115200);
 
-    EPD.begin();
-    UIRuntime::begin(&EPD);
-    InputService::begin();
-    ConfigManager::begin();
-    SystemController::begin();
+    EPD.begin(); // Initializes eInk hardware
+    UIRuntime::begin(&EPD); // Hands eInk control over to the render pipeline
+    InputService::begin(); // Sets hardware input pins and initializes input states
+    ConfigManager::begin(); // Initializes the system's data model
+    SystemController::begin(); // Spins up app system and starts the boot sequence
 
     if (SystemController::shouldCommit()) {
         UIRuntime::commit();
