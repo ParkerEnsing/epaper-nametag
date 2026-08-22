@@ -433,7 +433,7 @@ bool SystemController::setHomeAppId(const char* appId) {
     }
 
     DeviceConfig &config = ConfigManager::editable();
-    snprintf(config.homeAppId, sizeof(homeAppId), "%s", appId);
+    snprintf(config.homeAppId, sizeof(config.homeAppId), "%s", appId);
     return true;
 }
 
