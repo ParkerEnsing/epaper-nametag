@@ -33,21 +33,10 @@ namespace {
     bool startBootSequenceStep(size_t index, uint32_t nowMs);
     void updateBootSequence(uint32_t nowMs);
 
-
-    static const char* SLIDESHOW_SEQUENCE_IDS[] = {
-        "diagnostic",
-        "uptime",
-        "launcher",
-    };
-
-    static const uint32_t SLIDESHOW_STEP_DURATION = 5000; // milliseconds
-    static constexpr size_t SLIDESHOW_SEQUENCE_COUNT = sizeof(SLIDESHOW_SEQUENCE_IDS) / sizeof(SLIDESHOW_SEQUENCE_IDS[0]);
     size_t slideshowSequenceIndex = 0;
     uint32_t slideshowStepStartMs = 0;
 
-
     bool activateApp(const char* appId, SystemMode nextMode); // redundant forward declaration. Useful if sequence functions need to move in the future.
-
 
     bool commitRequested = false;
 
@@ -242,33 +231,48 @@ namespace {
 
 
     bool showSlideshowStep(size_t index, uint32_t nowMs) {
-        if (SLIDESHOW_SEQUENCE_COUNT == 0) {
+        const DeviceConfig &config = ConfigManager::current();
+
+        if (config.slideshowAppCount == 0) {
+            Serial.println("SystemController: slideshow has no apps.");
+            return SystemController::goHome();
+        }
+
+        slideshowSequenceIndex = index % config.slideshowAppCount;
+        slideshowStepStartMs = nowMs;
+
+        const char* appId = config.slideshowAppIds[slideshowSequenceIndex];
+
+        if (appId[0] == '\0') {
+            Serial.println("SystemController: slideshow step has empty app ID.");
+            currentMode = SystemMode::Error;
             return false;
         }
 
-        slideshowSequenceIndex = index % SLIDESHOW_SEQUENCE_COUNT;
-        slideshowStepStartMs = nowMs;
-
-        return activateApp(SLIDESHOW_SEQUENCE_IDS[slideshowSequenceIndex], SystemMode::Slideshow);
+        return activateApp(appId, SystemMode::Slideshow);
     }
 
 
     bool nextSlideshowStep(uint32_t nowMs) {
-        if (SLIDESHOW_SEQUENCE_COUNT == 0) {
+        const DeviceConfig &config = ConfigManager::current();
+        
+        if (config.slideshowAppCount == 0) {
             return false;
         }
 
-        const size_t nextIndex = (slideshowSequenceIndex + 1) % SLIDESHOW_SEQUENCE_COUNT;
+        const size_t nextIndex = (slideshowSequenceIndex + 1) % config.slideshowAppCount;
         return showSlideshowStep(nextIndex, nowMs);
     }
 
 
     bool previousSlideshowStep(uint32_t nowMs) {
-        if (SLIDESHOW_SEQUENCE_COUNT == 0) {
+        const DeviceConfig &config = ConfigManager::current();
+        
+        if (config.slideshowAppCount == 0) {
             return false;
         }
 
-        const size_t previousIndex = (slideshowSequenceIndex == 0) ? (SLIDESHOW_SEQUENCE_COUNT - 1) : (slideshowSequenceIndex - 1);
+        const size_t previousIndex = (slideshowSequenceIndex == 0) ? (config.slideshowAppCount - 1) : (slideshowSequenceIndex - 1);
         return showSlideshowStep(previousIndex, nowMs);
     }
 
@@ -278,7 +282,20 @@ namespace {
             return;
         }
 
-        if (nowMs - slideshowStepStartMs < SLIDESHOW_STEP_DURATION) {
+        const DeviceConfig &config = ConfigManager::current();
+
+        if (config.slideshowAppCount == 0) {
+            SystemController::goHome();
+            return;
+        }
+
+        const uint32_t intervalMs = config.slideshowIntervalMs;
+
+        if (intervalMs == 0) {
+            return;
+        }
+
+        if (nowMs - slideshowStepStartMs < intervalMs) {
             return;
         }
 
