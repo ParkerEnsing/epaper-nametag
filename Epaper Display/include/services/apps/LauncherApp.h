@@ -2,21 +2,19 @@
 #define LAUNCHER_APP_H
 
 
-#include "services/App.h"
+#include "services/ScreenApp.h"
 // #include <stddef.h>
 
 
-class LauncherApp : public App {
+class LauncherApp : public ScreenApp {
     public:
         const char* id() const override;
         const char* name() const override;
 
-        void onEnter(AppContext &context) override;
         void onInput(AppContext &context, const InputEvent &event) override;
-
-        lv_obj_t* screen() const override; 
     private:
-        void createScreen();
+        void createScreen() override;
+        void onScreenEnter(AppContext &context) override;
         void updateListText();
 
         void moveSelection(uint32_t delta);
@@ -24,7 +22,6 @@ class LauncherApp : public App {
 
         static constexpr size_t TEXT_BUFFER_SIZE = 512;
 
-        lv_obj_t* _screen = nullptr;
         lv_obj_t* _titleLabel = nullptr;
         lv_obj_t* _listLabel = nullptr;
         lv_obj_t* _hintLabel = nullptr;

@@ -56,26 +56,7 @@ const char* LauncherApp::id() const {
 
 
 const char* LauncherApp::name() const {
-    return "Launcher";
-}
-
-
-void LauncherApp::onEnter(AppContext &context) {
-    if (_screen == nullptr) {
-        createScreen();
-    }
-    
-    const size_t appCount = AppRegistry::count() + 1; // adds 1 for slideshow
-
-    if (appCount == 0) {
-        _selectedIndex = 0;
-    }
-    else if (_selectedIndex >= appCount) {
-        _selectedIndex = appCount - 1;
-    }
-
-    updateListText();
-    context.requestCommit();
+    return "Apps";
 }
 
 
@@ -108,11 +89,6 @@ void LauncherApp::onInput(AppContext &context, const InputEvent &event) {
 }
 
 
-lv_obj_t* LauncherApp::screen() const {
-    return _screen;
-}
-
-
 void LauncherApp::createScreen() {
     _screen = lv_obj_create(nullptr);
     lv_obj_add_style(_screen, UITheme::screen(), LV_PART_MAIN);
@@ -132,6 +108,22 @@ void LauncherApp::createScreen() {
     lv_label_set_text(_hintLabel, "Input not connected yet");
     lv_obj_add_style(_hintLabel, UITheme::bodyLabel(), LV_PART_MAIN);
     lv_obj_align(_hintLabel, LV_ALIGN_BOTTOM_MID, 0, -12);
+}
+
+
+void LauncherApp::onScreenEnter(AppContext &context) {
+    (void)context;
+
+    const size_t appCount = AppRegistry::count() + 1; // adds 1 for slideshow
+
+    if (appCount == 0) {
+        _selectedIndex = 0;
+    }
+    else if (_selectedIndex >= appCount) {
+        _selectedIndex = appCount - 1;
+    }
+
+    updateListText();
 }
 
 
