@@ -13,22 +13,6 @@ const char* DiagnosticApp::name() const {
 }
 
 
-void DiagnosticApp::onEnter(AppContext &context) {
-    if (_screen == nullptr) {
-        createScreen();
-    }
-    
-    updateText();
-
-    context.requestCommit();
-}
-
-
-lv_obj_t* DiagnosticApp::screen() const {
-    return _screen;
-}
-
-
 void DiagnosticApp::createScreen() {
     _screen = lv_obj_create(nullptr);
     lv_obj_add_style(_screen, UITheme::screen(), LV_PART_MAIN);
@@ -43,6 +27,12 @@ void DiagnosticApp::createScreen() {
     lv_obj_set_width(_bodyLabel, 760);
     lv_label_set_long_mode(_bodyLabel, LV_LABEL_LONG_WRAP);
     lv_obj_align(_bodyLabel, LV_ALIGN_TOP_LEFT, 16, 48);
+}
+
+
+void DiagnosticApp::onScreenEnter(AppContext &context) {
+    (void)context;
+    updateText();
 }
 
 
