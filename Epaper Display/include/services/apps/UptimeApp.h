@@ -2,25 +2,22 @@
 #define UPTIME_APP_H
 
 
-#include "services/App.h"
+#include "services/ScreenApp.h"
 
 
-class UptimeApp : public App {
+class UptimeApp : public ScreenApp {
     public:
         const char* id() const override;
         const char* name() const override;
 
-        void onEnter(AppContext &context) override;
         void onUpdate(AppContext &context, uint32_t nowMs) override;
-
-        lv_obj_t* screen() const override;
     private:
-        void createScreen();
+        void createScreen() override;
+        void onScreenEnter(AppContext &context) override;
         void updateText(uint32_t nowMs);
 
         static constexpr uint32_t UPDATE_INTERVAL_MS = 5000;
 
-        lv_obj_t* _screen = nullptr;
         lv_obj_t* _titleLabel = nullptr;
         lv_obj_t* _uptimeLabel = nullptr;
         lv_obj_t* _hintLabel = nullptr;

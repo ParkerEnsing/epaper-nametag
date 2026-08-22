@@ -13,19 +13,6 @@ const char* UptimeApp::name() const {
 }
 
 
-
-void UptimeApp::onEnter(AppContext &context) {
-    if (_screen == nullptr) {
-        createScreen();
-    }
-
-    _lastUpdateMs = millis();
-    updateText(_lastUpdateMs);
-
-    context.requestCommit();
-}
-
-
 void UptimeApp::onUpdate(AppContext &context, uint32_t nowMs) {
     if (nowMs - _lastUpdateMs < UPDATE_INTERVAL_MS) {
         return;
@@ -37,11 +24,6 @@ void UptimeApp::onUpdate(AppContext &context, uint32_t nowMs) {
     updateText(nowMs);
 
     context.requestCommit();
-}
-
-
-lv_obj_t* UptimeApp::screen() const {
-    return _screen;
 }
 
 
@@ -62,6 +44,14 @@ void UptimeApp::createScreen() {
     lv_label_set_text(_hintLabel, "Updates every 5 seconds.");
     lv_obj_add_style(_hintLabel, UITheme::bodyLabel(), LV_PART_MAIN);
     lv_obj_align(_hintLabel, LV_ALIGN_BOTTOM_MID, 0, -12);
+}
+
+
+void UptimeApp::onScreenEnter(AppContext &context) {
+    (void)context;
+    
+    _lastUpdateMs = millis();
+    updateText(_lastUpdateMs);
 }
 
 
