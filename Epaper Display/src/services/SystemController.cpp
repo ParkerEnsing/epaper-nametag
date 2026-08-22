@@ -332,11 +332,14 @@ void SystemController::begin() {
 
     currentApp = nullptr;
     loadedScreen = nullptr;
-    currentMode = SystemMode::Home;
+    currentMode = SystemMode::BootSequence;
     commitRequested = false;
 
     bootSequenceIndex = 0;
     bootStepStartMs = 0;
+
+    slideshowSequenceIndex = 0;
+    slideshowStepStartMs = 0;
 
     appContext.clear();
 
