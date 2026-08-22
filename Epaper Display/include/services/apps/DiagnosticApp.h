@@ -10,7 +10,7 @@ class DiagnosticApp : public ScreenApp {
         const char* id() const override;
         const char* name() const override;
     private:
-        void createScreen();
+        void createScreen() override;
         void onScreenEnter(AppContext &context) override;
         void updateText();
 
