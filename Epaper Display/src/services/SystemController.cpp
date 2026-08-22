@@ -26,12 +26,6 @@ namespace {
         uint32_t durationMs;
     };
 
-    static constexpr SequenceStep BOOT_SEQUENCE[] = {
-        {"diagnostic", 3000},
-        {"uptime", 3000},
-    };
-
-    static constexpr size_t BOOT_SEQUENCE_COUNT = sizeof(BOOT_SEQUENCE) / sizeof(BOOT_SEQUENCE[0]);
     size_t bootSequenceIndex = 0;
     uint32_t bootStepStartMs = 0;
 
@@ -184,10 +178,12 @@ namespace {
 
 
     bool startBootSequence(uint32_t nowMs) {
+        const DeviceConfig &config = ConfigManager::current();
+        
         bootSequenceIndex = 0;
         bootStepStartMs = nowMs;
 
-        if (BOOT_SEQUENCE_COUNT == 0) {
+        if (config.bootSequenceCount == 0) {
             return SystemController::goHome();
         }
         return startBootSequenceStep(bootSequenceIndex, nowMs);
@@ -195,14 +191,24 @@ namespace {
 
 
     bool startBootSequenceStep(size_t index, uint32_t nowMs) {
-        if (index >= BOOT_SEQUENCE_COUNT) {
+        const DeviceConfig &config = ConfigManager::current();
+        
+        if (index >= config.bootSequenceCount) {
             return SystemController::goHome();
+        }
+
+        const ConfigSequenceStep &step = config.bootSequence[index];
+
+        if (step.appId[0] == '\0') {
+            Serial.println("SystemController: boot sequence step has empty app ID.");
+            currentMode = SystemMode::Error;
+            return false;
         }
 
         bootSequenceIndex = index;
         bootStepStartMs = nowMs;
 
-        return activateApp(BOOT_SEQUENCE[bootSequenceIndex].appId, SystemMode::BootSequence);
+        return activateApp(step.appId, SystemMode::BootSequence);
     }
 
 
@@ -211,12 +217,14 @@ namespace {
             return;
         }
 
-        if (bootSequenceIndex >= BOOT_SEQUENCE_COUNT) {
+        const DeviceConfig &config = ConfigManager::current();
+
+        if (bootSequenceIndex >= config.bootSequenceCount) {
             SystemController::goHome();
             return;
         }
 
-        const SequenceStep &step = BOOT_SEQUENCE[bootSequenceIndex];
+        const ConfigSequenceStep &step = config.bootSequence[bootSequenceIndex];
 
         if (nowMs - bootStepStartMs < step.durationMs) {
             return;
@@ -224,7 +232,7 @@ namespace {
 
         const size_t nextIndex = bootSequenceIndex + 1;
 
-        if (nextIndex >= BOOT_SEQUENCE_COUNT) {
+        if (nextIndex >= config.bootSequenceCount) {
             SystemController::goHome();
             return;
         }
