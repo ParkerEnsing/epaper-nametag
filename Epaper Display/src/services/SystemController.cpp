@@ -1,6 +1,7 @@
 #include "services/SystemController.h"
 
 #include "config/DeviceConfig.h"
+#include "config/ConfigManager.h"
 
 #include "services/App.h"
 #include "services/AppContext.h"
@@ -10,19 +11,15 @@
 
 #include <Arduino.h>
 #include <lvgl.h>
+// #include <stdio.h>
 
 
 namespace {
-    static constexpr const char* DEFAULT_HOME_APP_ID = "launcher";
-
     AppContext appContext;
 
     App* currentApp = nullptr;
     lv_obj_t* loadedScreen = nullptr;
     SystemMode currentMode = SystemMode::Home;
-
-    const char* configuredHomeAppID = DEFAULT_HOME_APP_ID;
-
 
     struct SequenceStep {
         const char* appId;
@@ -377,7 +374,7 @@ bool SystemController::launchApp(const char* appId) {
 
 
 bool SystemController::goHome() {
-    return activateApp(configuredHomeAppID, SystemMode::Home);
+    return activateApp(ConfigManager::current().homeAppId, SystemMode::Home);
 }
 
 
@@ -407,13 +404,14 @@ bool SystemController::setHomeAppId(const char* appId) {
         return false;
     }
 
-    configuredHomeAppID = appId;
+    DeviceConfig &config = ConfigManager::editable();
+    snprintf(config.homeAppId, sizeof(homeAppId), "%s", appId);
     return true;
 }
 
 
 const char* SystemController::homeAppId() {
-    return configuredHomeAppID;
+    return ConfigManager::current().homeAppId;
 }
 
 
