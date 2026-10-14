@@ -28,9 +28,9 @@ void UIRuntime::begin(EPaperDisplay* display) {
 
     LVGL_EPAPER_ADAPTER::init(display);
 
-    uiDisplay = lv_display_create( EPaperDisplay::X, EPaperDisplay::Y);
-    lv_display_set_color_format( uiDisplay, LV_COLOR_FORMAT_I1);
-    lv_display_set_flush_cb( uiDisplay, LVGL_EPAPER_ADAPTER::flush_cb);
+    uiDisplay = lv_display_create(EPaperDisplay::X, EPaperDisplay::Y);
+    lv_display_set_color_format(uiDisplay, LV_COLOR_FORMAT_I1);
+    lv_display_set_flush_cb(uiDisplay, LVGL_EPAPER_ADAPTER::flush_cb);
     lv_display_set_buffers(uiDisplay, lvDrawBuffer, nullptr, sizeof(lvDrawBuffer), LV_DISPLAY_RENDER_MODE_FULL);
     lv_display_add_event_cb(uiDisplay, LVGL_EPAPER_ADAPTER::rounder_cb, LV_EVENT_INVALIDATE_AREA, uiDisplay);
 
