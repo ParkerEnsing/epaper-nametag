@@ -14,6 +14,9 @@ class MainMenuApp : public ScreenApp {
     private:
         void createScreen() override;
         void onScreenEnter(AppContext &context) override;
+
+        lv_obj_t* _appTitle;
+        lv_obj_t* _sectionHeading;
 };
 
 
