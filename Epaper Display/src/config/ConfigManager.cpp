@@ -74,10 +74,10 @@ DeviceConfig& ConfigManager::editable() {
 void ConfigManager::loadDefaults(DeviceConfig &config) {
     memset(&config, 0, sizeof(config));
 
-    copyAppId(config.homeAppId, sizeof(config.homeAppId), "diagnostic");
+    copyAppId(config.homeAppId, sizeof(config.homeAppId), "main_menu");
 
-    addBootStep(config, "diagnostic", 3000);
-    addBootStep(config, "uptime", 3000);
+    // addBootStep(config, "diagnostic", 3000);
+    // addBootStep(config, "uptime", 3000);
 
     config.slideshowIntervalMs = 5000;
     addSlideshowApp(config, "diagnostic");
