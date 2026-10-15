@@ -74,7 +74,7 @@ DeviceConfig& ConfigManager::editable() {
 void ConfigManager::loadDefaults(DeviceConfig &config) {
     memset(&config, 0, sizeof(config));
 
-    copyAppId(config.homeAppId, sizeof(config.homeAppId), "main_menu");
+    copyAppId(config.homeAppId, sizeof(config.homeAppId), "nametag");
 
     // addBootStep(config, "diagnostic", 3000);
     // addBootStep(config, "uptime", 3000);

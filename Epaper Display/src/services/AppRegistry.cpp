@@ -4,6 +4,7 @@
 #include "services/apps/LauncherApp.h"
 #include "services/apps/DiagnosticApp.h"
 #include "services/apps/UptimeApp.h"
+#include "services/apps/NametagApp.h"
 
 // #include <string.h>
 
@@ -13,12 +14,14 @@ namespace {
     LauncherApp launcherApp;
     DiagnosticApp diagnosticApp;
     UptimeApp uptimeApp;
+    NametagApp nametagApp;
 
     App* const registeredApps[] = {
         &mainMenuApp,
         &launcherApp,
         &diagnosticApp,
         &uptimeApp,
+        &nametagApp,
     };
 
     constexpr size_t registeredAppCount = sizeof(registeredApps) / sizeof(registeredApps[0]);
