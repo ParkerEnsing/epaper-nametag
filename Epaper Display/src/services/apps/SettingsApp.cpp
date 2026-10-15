@@ -1,6 +1,11 @@
 #include "services/apps/SettingsApp.h"
 
 
+namespace  {
+    // for local private functions
+}
+
+
 const char* SettingsApp::id() const {
     return "settings";
 }
