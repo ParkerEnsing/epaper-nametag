@@ -5,6 +5,7 @@
 #include "services/apps/DiagnosticApp.h"
 #include "services/apps/UptimeApp.h"
 #include "services/apps/NametagApp.h"
+#include "services/apps/FileBrowserApp.h"
 #include "services/apps/SettingsApp.h"
 
 // #include <string.h>
@@ -16,6 +17,7 @@ namespace {
     DiagnosticApp diagnosticApp;
     UptimeApp uptimeApp;
     NametagApp nametagApp;
+    FileBrowserApp fileBrowserApp;
     SettingsApp settingsApp;
 
     App* const registeredApps[] = {
@@ -24,6 +26,7 @@ namespace {
         &diagnosticApp,
         &uptimeApp,
         &nametagApp,
+        &fileBrowserApp,
         &settingsApp,
     };
 
