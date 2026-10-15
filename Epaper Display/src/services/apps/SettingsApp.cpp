@@ -2,7 +2,7 @@
 
 
 const char* SettingsApp::id() const {
-    return "settings_app";
+    return "settings";
 }
 
 
