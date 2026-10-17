@@ -3,6 +3,12 @@
 #include "displays/ui/UITheme.h"
 
 
+namespace {
+    // for private local functions
+
+}
+
+
 const char* DiagnosticApp::id() const {
     return "diagnostic";
 }
@@ -16,11 +22,6 @@ const char* DiagnosticApp::name() const {
 void DiagnosticApp::createScreen() {
     _screen = lv_obj_create(nullptr);
     lv_obj_add_style(_screen, UITheme::screen(), LV_PART_MAIN);
-
-    _titleLabel = lv_label_create(_screen);
-    lv_label_set_text(_titleLabel, name());
-    lv_obj_add_style(_titleLabel, UITheme::titleLabel(), LV_PART_MAIN);
-    lv_obj_align(_titleLabel, LV_ALIGN_TOP_MID, 0, 8);
 
     _bodyLabel = lv_label_create(_screen);
     lv_obj_add_style(_bodyLabel, UITheme::bodyLabel(), LV_PART_MAIN);
@@ -37,27 +38,33 @@ void DiagnosticApp::onScreenEnter(AppContext &context) {
 
 
 void DiagnosticApp::updateText() {
+    uint32_t freePsram = ESP.getFreePsram();
+    uint32_t totalPsram = ESP.getPsramSize();
+    uint32_t freeHeap = ESP.getFreeHeap();
+    uint32_t totalHeap = ESP.getHeapSize();
+
     snprintf(
         _textBuffer,
         sizeof(_textBuffer),
-        "LVGL: %d.%d.%d\n"
-        "PSRAM: %s\n"
-        "PSRAM size: %lu bytes\n"
-        "Free heap: %lu bytes\n"
-        "Free PSRAM: %lu bytes\n"
-        "Flash size: %lu bytes\n"
+        "MCU: %s, Rev %d\n"
+        "Cores: %d\n"
         "CPU frequency: %lu MHz\n"
-        "SDK: %s",
-        lv_version_major(),
-        lv_version_minor(),
-        lv_version_patch(),
-        psramFound() ? "Okay" : "FAIL",
-        static_cast<unsigned long>(ESP.getPsramSize()),
-        static_cast<unsigned long>(ESP.getFreeHeap()),
-        static_cast<unsigned long>(ESP.getFreePsram()),
-        static_cast<unsigned long>(ESP.getFlashChipSize()),
-        static_cast<unsigned long>(ESP.getCpuFreqMHz()),
-        ESP.getSdkVersion()
+        "SDK Ver.: %s\n"
+        "PSRAM: %lu KiB / %lu KiB (%4.1f %% free)\n"
+        "Heap: %lu KiB / %lu KiB (%4.1f %% free)\n"
+        "Flash size: %lu KiB\n",
+        ESP.getChipModel(),
+        ESP.getChipRevision(),
+        ESP.getChipCores(),
+        ESP.getCpuFreqMHz(),
+        ESP.getSdkVersion(),
+        freePsram / 1024,
+        totalPsram / 1024,
+        static_cast<float>(freePsram) / static_cast<float>(totalPsram) * 100.0,
+        freeHeap / 1024,
+        totalHeap / 1024,
+        static_cast<float>(freeHeap) / static_cast<float>(totalHeap) * 100.0,
+        ESP.getFlashChipSize() / 1024
     );
 
     lv_label_set_text(_bodyLabel, _textBuffer);

@@ -14,7 +14,6 @@ class DiagnosticApp : public ScreenApp {
         void onScreenEnter(AppContext &context) override;
         void updateText();
 
-        lv_obj_t* _titleLabel = nullptr;
         lv_obj_t* _bodyLabel = nullptr;
 
         char _textBuffer[512] = {};
