@@ -22,9 +22,7 @@ class LauncherApp : public ScreenApp {
 
         static constexpr size_t TEXT_BUFFER_SIZE = 512;
 
-        lv_obj_t* _titleLabel = nullptr;
         lv_obj_t* _listLabel = nullptr;
-        lv_obj_t* _hintLabel = nullptr;
 
         size_t _selectedIndex = 0;
 

@@ -12,26 +12,19 @@
 
 
 namespace {
-    void appendText(char* buffer,
+    void appendText(
+        char* buffer,
         size_t bufferSize,
         size_t &offset,
         const char* format,
         const char* marker,
-        const char* name,
-        const char* id
+        const char* name
     ) {
         if (offset >= bufferSize) {
             return;
         }
 
-        const int written = snprintf(
-            buffer + offset,
-            bufferSize - offset,
-            format,
-            marker,
-            name,
-            id
-        );
+        const int written = snprintf(buffer + offset, bufferSize - offset, format, marker, name);
 
         if (written < 0) {
             return;
@@ -93,21 +86,11 @@ void LauncherApp::createScreen() {
     _screen = lv_obj_create(nullptr);
     lv_obj_add_style(_screen, UITheme::screen(), LV_PART_MAIN);
 
-    _titleLabel = lv_label_create(_screen);
-    lv_label_set_text(_titleLabel, "App Launcher");
-    lv_obj_add_style(_titleLabel, UITheme::titleLabel(), LV_PART_MAIN);
-    lv_obj_align(_titleLabel, LV_ALIGN_TOP_MID, 0, 8);
-
     _listLabel = lv_label_create(_screen);
     lv_obj_add_style(_listLabel, UITheme::bodyLabel(), LV_PART_MAIN);
     lv_obj_set_width(_listLabel, 760);
     lv_label_set_long_mode(_listLabel, LV_LABEL_LONG_WRAP);
-    lv_obj_align(_listLabel, LV_ALIGN_TOP_LEFT, 16, 48);
-
-    _hintLabel = lv_label_create(_screen);
-    lv_label_set_text(_hintLabel, "Input not connected yet");
-    lv_obj_add_style(_hintLabel, UITheme::bodyLabel(), LV_PART_MAIN);
-    lv_obj_align(_hintLabel, LV_ALIGN_BOTTOM_MID, 0, -12);
+    //lv_obj_align(_listLabel, LV_ALIGN_TOP_LEFT, 16, 48);
 }
 
 
@@ -130,10 +113,6 @@ void LauncherApp::onScreenEnter(AppContext &context) {
 void LauncherApp::updateListText() {
     size_t offset = 0;
 
-    snprintf(_textBuffer, sizeof(_textBuffer), "Registered apps: \n\n");
-
-    offset = strlen(_textBuffer);
-
     const size_t appCount = AppRegistry::count();
 
     if (appCount == 0) {
@@ -146,19 +125,15 @@ void LauncherApp::updateListText() {
         App* app = AppRegistry::getByIndex(i);
 
         const char* marker = (i == _selectedIndex) ? "> " : "   ";
-
         const char* appName = (app != nullptr) ? app->name() : "(null)";
-
-        const char* appId = (app != nullptr) ? app->id() : "null";
 
         appendText(
             _textBuffer,
             sizeof(_textBuffer),
             offset,
-            "%s%s [%s]\n",
+            "%s%s\n",
             marker,
-            appName,
-            appId
+            appName
         );
     }
 
@@ -168,10 +143,9 @@ void LauncherApp::updateListText() {
         _textBuffer,
         sizeof(_textBuffer),
         offset,
-        "%s%s [%s]\n",
+        "%s%s\n",
         marker,
-        "Start slideshow",
-        "system"
+        "Start slideshow"
     );
 
     lv_label_set_text(_listLabel, _textBuffer);
