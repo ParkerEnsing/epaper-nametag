@@ -33,7 +33,7 @@
 #define SD_SPI_SCK 39 // IO39, Chip 32
 #define SD_SPI_COPI 40 // IO40, Chip 33
 #define IO41 41 // Chip 34
-#define IO42 42 // Chip 35
+#define SD_POWER 42 // Chip 35
 #define TXD0 43 // IO43, Chip 37
 #define RXD0 44 // IO44, Chip 36
 #define DISP_SPI_CS 45 // IO45, Chip 26
