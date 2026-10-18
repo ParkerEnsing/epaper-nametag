@@ -7,6 +7,8 @@
 #include "services/apps/NametagApp.h"
 #include "services/apps/FileBrowserApp.h"
 #include "services/apps/SettingsApp.h"
+#include "services/apps/DisplayTestApp.h"
+#include "services/apps/SplashApp.h"
 
 // #include <string.h>
 
@@ -19,6 +21,8 @@ namespace {
     NametagApp nametagApp;
     FileBrowserApp fileBrowserApp;
     SettingsApp settingsApp;
+    DisplayTestApp displayTestApp;
+    SplashApp splashApp;
 
     App* const registeredApps[] = {
         &mainMenuApp,
@@ -28,6 +32,8 @@ namespace {
         &nametagApp,
         &fileBrowserApp,
         &settingsApp,
+        &displayTestApp,
+        &splashApp,
     };
 
     constexpr size_t registeredAppCount = sizeof(registeredApps) / sizeof(registeredApps[0]);

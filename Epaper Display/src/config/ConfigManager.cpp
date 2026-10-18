@@ -76,11 +76,12 @@ void ConfigManager::loadDefaults(DeviceConfig &config) {
 
     copyAppId(config.homeAppId, sizeof(config.homeAppId), "nametag");
 
-    // addBootStep(config, "diagnostic", 3000);
-    // addBootStep(config, "uptime", 3000);
+    addBootStep(config, "display_test", 3000);
+    addBootStep(config, "diagnostic", 4000);
+    addBootStep(config, "splash", 5000);
 
     config.slideshowIntervalMs = 5000;
+    addSlideshowApp(config, "display_test");
     addSlideshowApp(config, "diagnostic");
-    addSlideshowApp(config, "uptime");
-    addSlideshowApp(config, "launcher");
+    addSlideshowApp(config, "main_menu");
 }

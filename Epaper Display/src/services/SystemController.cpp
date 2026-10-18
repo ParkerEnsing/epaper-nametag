@@ -343,7 +343,7 @@ void SystemController::begin() {
 
     appContext.clear();
 
-    //startBootSequence(millis());
+    startBootSequence(millis());
 }
 
 
