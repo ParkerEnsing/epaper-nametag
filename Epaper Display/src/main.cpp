@@ -1,10 +1,8 @@
 #include <Arduino.h>
 
-// #include "assets/test_images/pic_home.h"
-
 #include "DevBoardIO.h"
 #include "displays/drivers/EPaperDisplay.h"
-// #include <lvgl.h>
+#include <lvgl.h>
 #include "displays/ui/UIRuntime.h"
 
 #include "input/InputService.h"
@@ -12,6 +10,7 @@
 
 #include "config/ConfigManager.h"
 #include "services/SystemController.h"
+#include "services/StorageService.h"
 
 
 EPaperDisplay EPD;
@@ -70,12 +69,41 @@ static void processSerialDebugInput() {
 }
 
 
+void testStorage() {
+    StorageService::DirectoryEntry entries[16];
+
+    size_t count = 0;
+    bool truncated = false;
+
+    if (!StorageService::listDirectory("/", entries, 16, count, truncated)) {
+        Serial.println("Failed to read SD root directory.");
+        return;
+    }
+
+    Serial.println("SD root directory:");
+
+    for (size_t i = 0; i < count; i++) {
+        const auto &entry = entries[i];
+        Serial.printf("%s %s %llu bytes\n", entry.isDirectory ? "[DIR]" : "[FILE]", entry.name, static_cast<unsigned long long>(entry.sizeBytes));
+    }
+
+    if (truncated) {
+        Serial.println("Additional entries not displayed.");
+    }
+}
+
+
 void setup() {
     Serial.begin(115200);
 
     EPD.begin(); // Initializes eInk hardware
     UIRuntime::begin(&EPD); // Hands eInk control over to the render pipeline
+
     InputService::begin(); // Sets hardware input pins and initializes input states
+
+    StorageService::begin(); // Initializes TF reader
+    testStorage();
+
     ConfigManager::begin(); // Initializes the system's data model
     SystemController::begin(); // Spins up app system and starts the boot sequence
 
