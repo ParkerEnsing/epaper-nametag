@@ -78,20 +78,20 @@ bool StorageService::listDirectory(const char* path, DirectoryEntry* entries, si
 
         // Extract the filename from the returned path.
         const char* fullName = file.name();
-        const char* basename = strrchr(fullName, '/');
+        const char* entryName = strrchr(fullName, '/');
 
-        if (basename != nullptr) {
-            basename++;
+        if (entryName != nullptr) {
+            entryName++;
         }
         else {
-            basename = fullName;
+            entryName = fullName;
         }
 
         snprintf(
             entry.name,
             sizeof(entry.name),
             "%s",
-            basename
+            entryName
         );
 
         entry.isDirectory = file.isDirectory();
