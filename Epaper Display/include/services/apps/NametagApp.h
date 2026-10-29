@@ -1,5 +1,5 @@
-#ifndef NAMETAG_APP
-#define NAMETAG_APP
+#ifndef NAMETAG_APP_H
+#define NAMETAG_APP_H
 
 #include "services/ScreenApp.h"
 

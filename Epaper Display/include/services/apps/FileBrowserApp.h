@@ -1,5 +1,5 @@
-#ifndef FILE_BROWSER_APP
-#define FILE_BROWSER_APP
+#ifndef FILE_BROWSER_APP_H
+#define FILE_BROWSER_APP_H
 
 #include "services/ScreenApp.h"
 

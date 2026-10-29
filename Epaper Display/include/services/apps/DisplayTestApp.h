@@ -1,5 +1,5 @@
-#ifndef DISPLAY_TEST_APP
-#define DISPLAY_TEST_APP
+#ifndef DISPLAY_TEST_APP_H
+#define DISPLAY_TEST_APP_H
 
 #include "services/ScreenApp.h"
 

@@ -1,5 +1,5 @@
-#ifndef SPLASH_APP
-#define SPLASH_APP
+#ifndef SPLASH_APP_H
+#define SPLASH_APP_H
 
 #include "services/ScreenApp.h"
 

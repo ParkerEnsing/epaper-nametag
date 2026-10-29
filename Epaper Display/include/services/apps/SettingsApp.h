@@ -1,5 +1,5 @@
-#ifndef SETTINGS_APP
-#define SETTINGS_APP
+#ifndef SETTINGS_APP_H
+#define SETTINGS_APP_H
 
 #include "services/ScreenApp.h"
 
