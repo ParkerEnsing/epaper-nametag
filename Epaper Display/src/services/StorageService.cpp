@@ -27,7 +27,6 @@ bool StorageService::begin() {
     digitalWrite(SD_POWER, HIGH);
 
     sdSPI.begin(SD_SPI_SCK, SD_SPI_CIPO, SD_SPI_COPI, SD_SPI_CS);
-
     mounted = SD.begin(SD_SPI_CS, sdSPI, SD_SPI_FREQUENCY);
 
     if (!mounted) {
@@ -48,10 +47,15 @@ bool StorageService::isMounted() {
 
 
 bool StorageService::listDirectory(const char* path, DirectoryEntry* entries, size_t capacity, size_t &count, bool &truncated) {
-    count = 0;
-    truncated = false;
+    return listDirectoryPage(path, entries, capacity, 0, count, truncated);
+}
 
-    if (!mounted || path == nullptr || (entries == nullptr && capacity > 0)) {
+
+bool StorageService::listDirectoryPage(const char* path, DirectoryEntry* entries, size_t capacity, size_t offset, size_t &count, bool &hasMore) {
+    count = 0;
+    hasMore = false;
+
+    if (!mounted || path == nullptr || entries == nullptr || capacity == 0) {
         return false;
     }
 
@@ -61,39 +65,49 @@ bool StorageService::listDirectory(const char* path, DirectoryEntry* entries, si
         if (directory) {
             directory.close();
         }
-
         return false;
     }
 
     File file = directory.openNextFile();
 
-    while (file) {
-        if (count >= capacity) {
-            truncated = true;
-            file.close();
-            break;
-        }
+    // Skip entries preceding the requested page
+    size_t skipped = 0;
+    while (file && skipped < offset) {
+        file.close();
+        file = directory.openNextFile();
+        skipped++;
+    }
 
+    // Collect entries for this page
+    while (file && count < capacity) {
         DirectoryEntry &entry = entries[count];
+        entry = DirectoryEntry{};
 
-        // Extract the filename from the returned path.
         const char* fullName = file.name();
-        const char* entryName = strrchr(fullName, '/');
 
-        if (entryName != nullptr) {
-            entryName++;
-        }
-        else {
-            entryName = fullName;
+        if (fullName == nullptr) {
+            file.close();
+            directory.close();
+            return false;
         }
 
-        snprintf(
+        const char* entryName = strchr(fullName, '/');
+        entryName = (entryName != nullptr) ? entryName + 1 : fullName;
+
+        const int written = sniprintf(
             entry.name,
             sizeof(entry.name),
             "%s",
             entryName
         );
 
+        if (written < 0) {
+            file.close();
+            directory.close();
+            return false;
+        }
+
+        entry.nameTruncated = static_cast<size_t>(written) >= sizeof(entry.name);
         entry.isDirectory = file.isDirectory();
         entry.sizeBytes = entry.isDirectory ? 0 : file.size();
 
@@ -103,7 +117,13 @@ bool StorageService::listDirectory(const char* path, DirectoryEntry* entries, si
         file = directory.openNextFile();
     }
 
-    directory.close();
+    // If another entry remains, another page exists
+    hasMore = static_cast<bool>(file);
 
+    if (file) {
+        file.close();
+    }
+
+    directory.close();
     return true;
 }

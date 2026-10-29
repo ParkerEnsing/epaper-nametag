@@ -11,6 +11,7 @@ namespace StorageService {
     struct DirectoryEntry {
         char name[MAX_FILENAME_LENGTH] = {};
         bool isDirectory = false;
+        bool nameTruncated = false;
         uint64_t sizeBytes = 0;
     };
 
@@ -22,6 +23,7 @@ namespace StorageService {
 
     // Read directory entries into a caller-provided array.
     bool listDirectory(const char* path, DirectoryEntry* entries, size_t capacity, size_t &count, bool &truncated);
+    bool listDirectoryPage(const char* path, DirectoryEntry* entries, size_t capacity, size_t offset, size_t &count, bool &hasMore);
 }
 
 
