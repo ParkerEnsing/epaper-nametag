@@ -1,7 +1,9 @@
 #ifndef APP_CONTEXT_H
 #define APP_CONTEXT_H
 
+
 #include <stdint.h>
+
 
 enum class AppCommandType {
     None,
@@ -12,10 +14,12 @@ enum class AppCommandType {
     StopSlideshow,
 };
 
+
 struct AppCommand {
     AppCommandType type = AppCommandType::None;
     const char* appId = nullptr;
 };
+
 
 class AppContext {
     public:
@@ -40,5 +44,6 @@ class AppContext {
         bool _commitRequested = false;
         AppCommand _command;
 };
+
 
 #endif

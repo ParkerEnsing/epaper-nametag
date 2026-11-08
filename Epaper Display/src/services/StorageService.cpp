@@ -46,6 +46,7 @@ bool StorageService::isMounted() {
 }
 
 
+// DEPRECATED
 bool StorageService::listDirectory(const char* path, DirectoryEntry* entries, size_t capacity, size_t &count, bool &truncated) {
     return listDirectoryPage(path, entries, capacity, 0, count, truncated);
 }
@@ -71,6 +72,7 @@ bool StorageService::listDirectoryPage(const char* path, DirectoryEntry* entries
     File file = directory.openNextFile();
 
     // Skip entries preceding the requested page
+    // TODO: find a more direct way to reach the desired starting file. Current system spends effort scrolling the entire directory list
     size_t skipped = 0;
     while (file && skipped < offset) {
         file.close();
@@ -92,15 +94,16 @@ bool StorageService::listDirectoryPage(const char* path, DirectoryEntry* entries
         }
 
         const char* entryName = strchr(fullName, '/');
-        entryName = (entryName != nullptr) ? entryName + 1 : fullName;
+        entryName = (entryName != nullptr) ? entryName + 1 : fullName; // if the entryName is valid, move the memory cursor to the first symbol of the name: otherwise, give the full name
 
-        const int written = sniprintf(
+        const int written = snprintf(
             entry.name,
             sizeof(entry.name),
             "%s",
             entryName
         );
 
+        // if the number of encoded characters is negative, there was an encoding error
         if (written < 0) {
             file.close();
             directory.close();

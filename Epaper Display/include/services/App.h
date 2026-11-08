@@ -5,8 +5,10 @@
 #include <Arduino.h>
 #include <lvgl.h>
 
+
 class AppContext;
 struct InputEvent;
+
 
 class App {
     public:
