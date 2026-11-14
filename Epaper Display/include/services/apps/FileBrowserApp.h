@@ -16,7 +16,11 @@ class FileBrowserApp : public ScreenApp {
         void onInput(AppContext &context, const InputEvent &event) override;
     private:
         static constexpr size_t PAGE_SIZE = 6;
-        static constexpr size_t MAX_PATH_LENGTH = 192;  
+        static constexpr size_t MAX_PATH_LENGTH = 192; // reduce to optimize, increase if paths are consistently too long
+        static constexpr size_t DISPLAY_FILENAME_BYTES = 44; // mostly arbitrary; adjust based on fontsize and desired visual row length
+        static constexpr size_t ROW_BUFFER_BYTES = 64; // current formatting needs 54 bytes; leaves overhead for format changes
+        static constexpr size_t TEXT_BUFFER_BYTES = PAGE_SIZE * ROW_BUFFER_BYTES + 1; // how much text can fit in _textBuffer
+        static constexpr size_t MAX_STATUS_MESSAGE_BYTES = 96; // buffer size for warnings and error messages
 
         void createScreen() override;
         void onScreenEnter(AppContext &context) override;
@@ -47,8 +51,8 @@ class FileBrowserApp : public ScreenApp {
         bool _hasMore = false;
         bool _showingDetails = false;
 
-        char _textBuffer[768] = {};
-        char _message[96] = {};
+        char _textBuffer[TEXT_BUFFER_BYTES] = {};
+        char _message[MAX_STATUS_MESSAGE_BYTES] = {};
 };
 
 #endif
