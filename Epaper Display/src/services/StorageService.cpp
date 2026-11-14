@@ -83,7 +83,6 @@ bool StorageService::listDirectoryPage(const char* path, DirectoryEntry* entries
     // Collect entries for this page
     while (file && count < capacity) {
         DirectoryEntry &entry = entries[count];
-        entry = DirectoryEntry{};
 
         const char* fullName = file.name();
 
